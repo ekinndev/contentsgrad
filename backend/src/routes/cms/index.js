@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const router = express.Router();
 const ContentType = require('../../models/content-type');
 const Content = require('../../models/content');
+const Language = require('../../models/language');
 const Space = require('../../models/space');
 
 // Content Type Routes
@@ -27,15 +28,25 @@ router.post('/content-types', async (req, res, next) => {
 });
 
 router.get('/languages', async (req, res, next) => {
-    res.send('test');
+    const languageAllData = await Language.findOne();
+
+    res.send(languageAllData);
 });
 
-router.delete('/languages/:id', (req, res, next) => {
-    res.send('hello world this is Ekin');
+router.delete('/languages/:id', async (req, res, next) => {
+    const id = req.params.id;
+
+    const status = await Language.findOneAndDelete({ _id: id });
+
+    res.send(status);
 });
 
 router.post('/languages', async (req, res, next) => {
-    res.send('hello world this is Ekin');
+    const { name, code } = req.body;
+
+    const status = await Language.create({ name, code });
+
+    res.send(status);
 });
 
 router.get('/spaces', async (req, res, next) => {
