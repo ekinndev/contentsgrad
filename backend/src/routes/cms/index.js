@@ -5,26 +5,50 @@ const ContentType = require('../../models/content-type');
 const Content = require('../../models/content');
 const Language = require('../../models/language');
 const Space = require('../../models/space');
+const contentType = require('../../models/content-type');
 
 // Content Type Routes
-router.get('/content-types/:id', (req, res, next) => {
-    res.send('hello world this is Ekin');
+router.get('/content-types/:id', async (req, res, next) => {
+    const id = req.params.id;
+
+    const contentType = await ContentType.findOne({ _id: id });
+
+    res.send(contentType);
 });
 
 router.get('/content-types', async (req, res, next) => {
-    res.send('test');
+    const datas = await ContentType.find();
+
+    res.send(datas);
 });
 
-router.put('/content-types/:id', (req, res, next) => {
-    res.send('hello world this is Ekin');
+router.put('/content-types/:id', async (req, res, next) => {
+    const id = req.params.id;
+    const { name, fields } = req.body;
+
+    const status = await contentType.findOneAndReplace({ _id: id }, { name, fields });
+
+    res.send(status);
 });
 
-router.delete('/content-types/:id', (req, res, next) => {
-    res.send('hello world this is Ekin');
+router.delete('/content-types/:id', async (req, res, next) => {
+    const id = req.params.id;
+
+    const status = await ContentType.findOneAndDelete({ _id: id });
+
+    res.send(status);
 });
 
 router.post('/content-types', async (req, res, next) => {
-    res.send('hello world this is Ekin');
+    const { name, fields } = req.body;
+
+    const isExists = await ContentType.exists({ name, fields });
+
+    if (isExists) return next({ message: 'This content type already exists!', status: 400 });
+
+    const status = await ContentType.create({ name, fields });
+
+    res.send(status);
 });
 
 router.get('/languages', async (req, res, next) => {
