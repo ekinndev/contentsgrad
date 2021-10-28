@@ -28,7 +28,7 @@ router.post('/content-types', async (req, res, next) => {
 });
 
 router.get('/languages', async (req, res, next) => {
-    const languageAllData = await Language.findOne();
+    const languageAllData = await Language.find();
 
     res.send(languageAllData);
 });
@@ -50,7 +50,7 @@ router.post('/languages', async (req, res, next) => {
 });
 
 router.get('/spaces', async (req, res, next) => {
-    const data = await Space.findOne();
+    const data = await Space.find();
 
     res.send(data);
 });
