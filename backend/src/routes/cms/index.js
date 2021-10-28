@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const router = express.Router();
 const ContentType = require('../../models/content-type');
 const Content = require('../../models/content');
+const Space = require('../../models/space');
 
 // Content Type Routes
 router.get('/content-types/:id', (req, res, next) => {
@@ -38,15 +39,25 @@ router.post('/languages', async (req, res, next) => {
 });
 
 router.get('/spaces', async (req, res, next) => {
-    res.send('test');
+    const data = await Space.findOne();
+
+    res.send(data);
 });
 
-router.delete('/spaces/:id', (req, res, next) => {
-    res.send('hello world this is Ekin');
+router.delete('/spaces/:id', async (req, res, next) => {
+    const id = req.params.id;
+
+    const status = await Space.findOneAndDelete({ _id: id });
+
+    res.send(status);
 });
 
 router.post('/spaces', async (req, res, next) => {
-    res.send('hello world this is Ekin');
+    const { name } = req.body;
+
+    const status = await Space.create({ name });
+
+    res.send(status);
 });
 //
 
