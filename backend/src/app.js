@@ -16,8 +16,10 @@ app.get('*', (req, res) => {
 });
 
 app.use((err, req, res, next) => {
-    console.error(err.stack);
-    res.status(500).send('Something broke!');
+    const status = err.status || 500;
+    const message = err.message || 'Something broke!';
+
+    res.status(status).send(err);
 });
 
 module.exports = app;
