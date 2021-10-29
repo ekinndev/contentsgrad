@@ -4,7 +4,6 @@ const ContentType = require('../../models/content-type');
 const Content = require('../../models/content');
 const Language = require('../../models/language');
 const Space = require('../../models/space');
-const contentType = require('../../models/content-type');
 
 // Content Type Routes
 router.get('/content-types/:id', async (req, res, next) => {
@@ -38,7 +37,7 @@ router.put('/content-types/:id', async (req, res, next) => {
 router.delete('/content-types/:id', async (req, res, next) => {
     const id = req.params.id;
 
-    const status = await ContentType.findOneAndDelete({ _id: id });
+    const status = await ContentType.deleteOne({ _id: id });
 
     res.send(status);
 });
@@ -64,7 +63,7 @@ router.get('/languages', async (req, res, next) => {
 router.delete('/languages/:id', async (req, res, next) => {
     const id = req.params.id;
 
-    const status = await Language.findOneAndDelete({ _id: id });
+    const status = await Language.deleteOne({ _id: id });
 
     res.send(status);
 });
@@ -86,7 +85,7 @@ router.get('/spaces', async (req, res, next) => {
 router.delete('/spaces/:id', async (req, res, next) => {
     const id = req.params.id;
 
-    const status = await Space.findOneAndDelete({ _id: id });
+    const status = await Space.deleteOne({ _id: id });
 
     res.send(status);
 });
