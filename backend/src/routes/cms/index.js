@@ -96,20 +96,56 @@ router.post('/spaces', async (req, res, next) => {
 //
 
 // Contents Routes
-router.get('/contents/:contentTypeId', (req, res, next) => {
-    res.send('GET');
+router.get('/contents/:contentTypeId', async (req, res, next) => {
+    const contentTypeId = req.params.contentTypeId;
+
+    const datas = await Content.find({ contentType: contentTypeId });
+
+    res.send(datas);
 });
 
-router.put('/contents/:contentTypeId/:id', (req, res, next) => {
-    res.send('hello world this is Ekin');
+router.put('/contents/:id', async (req, res, next) => {
+    const body = req.body;
+
+    const contentKeys = Object.keys(req.body);
+    const id = req.params.id;
+
+    const data = await Content.findOne({ _id: id }).populate('contentType');
+
+    const fields = Object.fromEntries(data.contentType.fields);
+
+    const doesItInclude = contentKeys.every(key => key in fields);
+
+    if (!doesItInclude) return next({ status: 400, message: 'Key error' });
+
+    const status = await Content.updateOne({ _id: id }, body);
+
+    res.send(status);
 });
 
-router.delete('/contents/:contentTypeId/:id', (req, res, next) => {
-    res.send('hello world this is Ekin');
+router.delete('/contents/:id', async (req, res, next) => {
+    const id = req.params.id;
+
+    const status = await Content.deleteOne({ _id: id });
+
+    res.send(status);
 });
 
 router.post('/contents/:contentTypeId', async (req, res, next) => {
-    res.send('hello world this is Ekin');
+    const cTID = req.params.contentTypeId;
+
+    const contentTypeIdData = await ContentType.findOne({ _id: cTID });
+
+    const contentKeys = Object.keys(req.body);
+    const fields = Object.fromEntries(contentTypeIdData.fields);
+
+    const doesItInclude = contentKeys.every(key => key in fields);
+
+    if (!doesItInclude) return next({ status: 400, message: 'Key error' });
+
+    const status = await Content.create({ ...req.body, contentType: cTID });
+
+    res.status(201).send(status);
 });
 //
 
