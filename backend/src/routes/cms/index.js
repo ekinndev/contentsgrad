@@ -24,8 +24,13 @@ router.get('/content-types', async (req, res, next) => {
 router.put('/content-types/:id', async (req, res, next) => {
     const id = req.params.id;
     const { name, fields } = req.body;
+    const contentTypeData = await ContentType.findOne({ _id: id });
 
-    const status = await contentType.findOneAndReplace({ _id: id }, { name, fields });
+    const doesItInclude = Object.keys(fields).every(key => key in Object.fromEntries(contentTypeData.fields));
+
+    if (!doesItInclude) return next({ message: 'Key Error!', status: 400 });
+
+    const status = await ContentType.updateOne({ _id: id }, { name, fields });
 
     res.send(status);
 });
