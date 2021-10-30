@@ -284,6 +284,9 @@ router.delete('/content-types/:id', async (req, res, next) => {
  *                 type: object
  *                 description: The content type's fields.
  *                 example: {title: String, age: Number}
+ *               spaces:
+ *                 type: Array
+ *                 example: [{_id: 617dc748cdbe3a44d4187b16}]
  *     responses:
  *       201:
  *         description: Edit a content type.
@@ -320,13 +323,13 @@ router.delete('/content-types/:id', async (req, res, next) => {
  *
  */
 router.post('/content-types', async (req, res, next) => {
-    const { name, fields } = req.body;
+    const { name, fields, spaces } = req.body;
 
     const isExist = await ContentType.exists({ name });
 
     if (isExist) return next({ message: 'This content type already exists!', status: 400 });
 
-    const status = await ContentType.create({ name, fields });
+    const status = await ContentType.create({ name, fields, spaces });
 
     res.status(201).send(status);
 });
