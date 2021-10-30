@@ -4,7 +4,7 @@
     "description": "This is a dockerized express server template",
     "main": "index.js",
     "scripts": {
-        "test": "jest --verbose --detectOpenHandles",
+        "test": "jest --verbose",
         "start": "NODE_ENV=development node ./bin/www",
         "watch": "nodemon ./bin/www"
     },
