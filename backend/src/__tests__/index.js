@@ -213,3 +213,54 @@ describe('Content Type', () => {
         expect(response.body.deletedCount).toBe(1);
     });
 });
+
+describe('Content', () => {
+    let id;
+    let contentTypeId;
+
+    test('There should be a no content type at db', async () => {
+        const data = { name: 'test', fields: { title: 'String', age: 'Number', number: 'Number' } };
+
+        const response = await request.post('/cms/content-types/').send(data);
+
+        contentTypeId = response.body._id;
+
+        const response2 = await request.get(`/cms/contents/${contentTypeId}`);
+
+        expect(response2.body.length).toBe(0);
+    });
+
+    test('Create content with extra field should return 400', async () => {
+        const data = { data: { title: 'String', age: 'Number', number: 'Number', space: 'Desktop', extraField: true } };
+
+        const response = await request.post(`/cms/contents/${contentTypeId}`).send(data);
+
+        expect(response.body.message).toBe('Key error');
+        expect(response.status).toBe(400);
+    });
+    test('Sucessfully create content should return 201', async () => {
+        const data = { data: { title: 'String', age: 'Number', number: 'Number' } };
+
+        const response = await request.post(`/cms/contents/${contentTypeId}`).send(data);
+
+        expect(response.status).toBe(201);
+
+        id = response.body._id;
+    });
+
+    test('Edit content should return 201', async () => {
+        const data = { data: { title: 'hello', age: 'hello', number: 'hello' } };
+
+        const response = await request.put(`/cms/contents/${id}`).send(data);
+
+        expect(response.status).toBe(200);
+        expect(response.body.modifiedCount).toBe(1);
+        expect(response.body.matchedCount).toBe(1);
+    });
+
+    test('Delete content should return 201', async () => {
+        const response = await request.delete(`/cms/contents/${id}`);
+
+        expect(response.status).toBe(200);
+    });
+});
