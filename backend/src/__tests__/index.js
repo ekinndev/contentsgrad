@@ -143,3 +143,73 @@ describe('Space', () => {
         expect(response.status).toBe(200);
     });
 });
+
+describe('Content Type', () => {
+    let id;
+
+    test('There should be a no content type at db', async () => {
+        const response = await request.get('/cms/content-types/');
+
+        expect(response.body.length).toBe(0);
+    });
+
+    test('Create content type with missing name should return 400', async () => {
+        const data = { fields: { title: 'String', age: 'Number', number: 'Number' } };
+
+        const response = await request.post('/cms/content-types/').send(data);
+
+        expect(response.status).toBe(400);
+    });
+
+    test('Create content type with missing fields should return 400', async () => {
+        const data = { name: 'Eko' };
+
+        const response = await request.post('/cms/content-types/').send(data);
+
+        expect(response.status).toBe(400);
+    });
+
+    test('Create content type should return 201', async () => {
+        const data = { name: 'test', fields: { title: 'String', age: 'Number', number: 'Number' } };
+
+        const response = await request.post('/cms/content-types/').send(data);
+
+        expect(response.status).toBe(201);
+
+        id = response.body._id;
+    });
+
+    test('Duplicate content type should return 400', async () => {
+        const data = { name: 'test', fields: { title: 'String', age: 'Number', number: 'Number' } };
+
+        const response = await request.post('/cms/content-types/').send(data);
+
+        expect(response.status).toBe(400);
+    });
+
+    test('At least one content type which name is test', async () => {
+        const response = await request.get(`/cms/content-types/${id}`);
+
+        expect(response.status).toBe(200);
+        expect(response.body.name).toBe('test');
+        expect(response.body._id).toBeTruthy();
+        expect(response.body.fields).toBeTruthy();
+    });
+
+    test('Edit content type', async () => {
+        const data = { name: 'test', fields: { title: 'String', age: 'Number', number: 'Number', address: 'String' } };
+
+        const response = await request.put(`/cms/content-types/${id}`).send(data);
+
+        expect(response.status).toBe(200);
+        expect(response.body.modifiedCount).toBe(1);
+        expect(response.body.matchedCount).toBe(1);
+    });
+
+    test('Delete content type', async () => {
+        const response = await request.delete(`/cms/content-types/${id}`);
+
+        expect(response.status).toBe(200);
+        expect(response.body.deletedCount).toBe(1);
+    });
+});
