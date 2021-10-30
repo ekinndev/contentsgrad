@@ -895,6 +895,9 @@ router.delete('/contents/:id', async (req, res, next) => {
  *                 type: object
  *                 description: The data of content.
  *                 example: {update: true, title: Test, age: 18}
+ *               language:
+ *                  type: string
+ *                  example: 617dc857edf7d4aa437b6988
  *     responses:
  *       201:
  *         description: Create a content.
