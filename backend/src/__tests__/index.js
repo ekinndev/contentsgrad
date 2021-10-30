@@ -69,10 +69,10 @@ describe('Language', () => {
         expect(response.status).toBe(200);
     });
 
-    test('Trying to delete an language with invalid id should return 400', async () => {
+    test('Trying to delete an language with invalid id should return 500', async () => {
         const response = await request.delete('/cms/languages/1');
 
-        expect(response.status).toBe(400);
+        expect(response.status).toBe(500);
     });
 
     test('Trying to delete an language with undefined id should return 400', async () => {
@@ -124,10 +124,10 @@ describe('Space', () => {
         expect(response.status).toBe(200);
     });
 
-    test('Trying to delete an language with invalid id should return 400', async () => {
+    test('Trying to delete an language with invalid id should return 500', async () => {
         const response = await request.delete('/cms/spaces/1');
 
-        expect(response.status).toBe(400);
+        expect(response.status).toBe(500);
     });
 
     test('Trying to delete an space with undefined id should return 400', async () => {
@@ -153,12 +153,12 @@ describe('Content Type', () => {
         expect(response.body.length).toBe(0);
     });
 
-    test('Create content type with missing name should return 400', async () => {
+    test('Create content type with missing name should return 500', async () => {
         const data = { fields: { title: 'String', age: 'Number', number: 'Number' } };
 
         const response = await request.post('/cms/content-types/').send(data);
 
-        expect(response.status).toBe(400);
+        expect(response.status).toBe(500);
     });
 
     test('Create content type should return 201', async () => {
