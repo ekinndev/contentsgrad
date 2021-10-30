@@ -168,6 +168,17 @@ describe('Space', () => {
 
 describe('Content Type', () => {
     let id;
+    let spaceId;
+
+    beforeAll(async () => {
+        const data = {
+            name: 'Desktop',
+        };
+
+        const spaceResponse = await request.post('/cms/spaces').send(data);
+
+        spaceId = spaceResponse.body._id;
+    });
 
     test('There should be a no content type at db', async () => {
         const response = await request.get('/cms/content-types/');
@@ -176,7 +187,7 @@ describe('Content Type', () => {
     });
 
     test('Create content type with missing name should return 500', async () => {
-        const data = { fields: { title: 'String', age: 'Number', number: 'Number' } };
+        const data = { fields: { title: 'String', age: 'Number', number: 'Number' }, spaces: [spaceId] };
 
         const response = await request.post('/cms/content-types/').send(data);
 
@@ -184,7 +195,7 @@ describe('Content Type', () => {
     });
 
     test('Create content type should return 201', async () => {
-        const data = { name: 'test', fields: { title: 'String', age: 'Number', number: 'Number' } };
+        const data = { name: 'test', fields: { title: 'String', age: 'Number', number: 'Number' }, spaces: [spaceId] };
 
         const response = await request.post('/cms/content-types/').send(data);
 
@@ -194,7 +205,7 @@ describe('Content Type', () => {
     });
 
     test('Duplicate content type should return 400', async () => {
-        const data = { name: 'test', fields: { title: 'String', age: 'Number', number: 'Number' } };
+        const data = { name: 'test', fields: { title: 'String', age: 'Number', number: 'Number' }, spaces: [spaceId] };
 
         const response = await request.post('/cms/content-types/').send(data);
 
@@ -211,7 +222,11 @@ describe('Content Type', () => {
     });
 
     test('Edit content type should return 200', async () => {
-        const data = { name: 'test', fields: { title: 'String', age: 'Number', number: 'Number', address: 'String' } };
+        const data = {
+            name: 'test',
+            fields: { title: 'String', age: 'Number', number: 'Number', address: 'String' },
+            spaces: [spaceId],
+        };
 
         const response = await request.put(`/cms/content-types/${id}`).send(data);
 
@@ -221,7 +236,10 @@ describe('Content Type', () => {
     });
 
     test('Edit content type with missing name should return 400', async () => {
-        const data = { fields: { title: 'String', age: 'Number', number: 'Number', address: 'String' } };
+        const data = {
+            fields: { title: 'String', age: 'Number', number: 'Number', address: 'String' },
+            spaces: [spaceId],
+        };
 
         const response = await request.put(`/cms/content-types/${id}`).send(data);
 
@@ -229,7 +247,7 @@ describe('Content Type', () => {
         expect(response.body.message).toBe('Name must be required!');
     });
     test('Edit content type with missing fields should return 400', async () => {
-        const data = { name: 'test' };
+        const data = { name: 'test', spaces: [spaceId] };
 
         const response = await request.put(`/cms/content-types/${id}`).send(data);
 
@@ -238,7 +256,7 @@ describe('Content Type', () => {
     });
 
     test('Content type fields should include at least one key', async () => {
-        const data = { name: 'test', fields: {} };
+        const data = { name: 'test', fields: {}, spaces: [spaceId] };
 
         const response = await request.put(`/cms/content-types/${id}`).send(data);
 
@@ -257,21 +275,48 @@ describe('Content Type', () => {
 describe('Content', () => {
     let id;
     let contentTypeId;
+    let spaceId;
+    let languageId;
+
+    beforeAll(async () => {
+        const spaceData = {
+            name: 'Desktop',
+        };
+
+        const spaceResponse = await request.post('/cms/spaces').send(spaceData);
+
+        spaceId = spaceResponse.body._id;
+        const contentTypedata = {
+            name: 'test',
+            fields: { title: 'String', age: 'Number', number: 'Number' },
+            spaces: [spaceId],
+        };
+
+        const contentTypeResponse = await request.post('/cms/content-types/').send(contentTypedata);
+
+        contentTypeId = contentTypeResponse.body._id;
+
+        const languageData = {
+            name: 'Turkish',
+            code: 'tr',
+        };
+
+        const languageResponse = await request.post('/cms/languages').send(languageData);
+
+        languageId = languageResponse.body._id;
+    });
 
     test('There should be a no content type at db', async () => {
-        const data = { name: 'test', fields: { title: 'String', age: 'Number', number: 'Number' } };
-
-        const response = await request.post('/cms/content-types/').send(data);
-
-        contentTypeId = response.body._id;
-
         const response2 = await request.get(`/cms/contents/${contentTypeId}`);
 
         expect(response2.body.length).toBe(0);
     });
 
     test('Create content with extra field should return 400', async () => {
-        const data = { data: { title: 'String', age: 'Number', number: 'Number', space: 'Desktop', extraField: true } };
+        const data = {
+            data: { title: 'String', age: 'Number', number: 'Number', space: 'Desktop', extraField: true },
+            language: languageId,
+        };
 
         const response = await request.post(`/cms/contents/${contentTypeId}`).send(data);
 
@@ -279,7 +324,7 @@ describe('Content', () => {
         expect(response.status).toBe(400);
     });
     test('Sucessfully create content should return 201', async () => {
-        const data = { data: { title: 'String', age: 'Number', number: 'Number' } };
+        const data = { data: { title: 'String', age: 'Number', number: 'Number' }, language: languageId };
 
         const response = await request.post(`/cms/contents/${contentTypeId}`).send(data);
 
@@ -289,7 +334,7 @@ describe('Content', () => {
     });
 
     test('Edit content should return 201', async () => {
-        const data = { data: { title: 'hello', age: 'hello', number: 'hello' } };
+        const data = { data: { title: 'hello', age: 'hello', number: 'hello' }, language: languageId };
 
         const response = await request.put(`/cms/contents/${id}`).send(data);
 
@@ -300,7 +345,6 @@ describe('Content', () => {
 
     test('Delete content should return 200', async () => {
         const response = await request.delete(`/cms/contents/${id}`);
-
         expect(response.status).toBe(200);
     });
 });
