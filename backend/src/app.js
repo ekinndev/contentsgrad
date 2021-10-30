@@ -20,10 +20,6 @@ app.use('*', (req, res) => {
 app.use((err, req, res, next) => {
     let status = err.status || 500;
 
-    if (err.name) {
-        status = 400; //MongoDB Errors
-    }
-
     res.status(status).send(err);
 });
 
