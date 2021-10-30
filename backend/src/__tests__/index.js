@@ -161,14 +161,6 @@ describe('Content Type', () => {
         expect(response.status).toBe(400);
     });
 
-    test('Create content type with missing fields should return 400', async () => {
-        const data = { name: 'Eko' };
-
-        const response = await request.post('/cms/content-types/').send(data);
-
-        expect(response.status).toBe(400);
-    });
-
     test('Create content type should return 201', async () => {
         const data = { name: 'test', fields: { title: 'String', age: 'Number', number: 'Number' } };
 
@@ -196,7 +188,7 @@ describe('Content Type', () => {
         expect(response.body.fields).toBeTruthy();
     });
 
-    test('Edit content type', async () => {
+    test('Edit content type should return 200', async () => {
         const data = { name: 'test', fields: { title: 'String', age: 'Number', number: 'Number', address: 'String' } };
 
         const response = await request.put(`/cms/content-types/${id}`).send(data);
@@ -204,6 +196,32 @@ describe('Content Type', () => {
         expect(response.status).toBe(200);
         expect(response.body.modifiedCount).toBe(1);
         expect(response.body.matchedCount).toBe(1);
+    });
+
+    test('Edit content type with missing name should return 400', async () => {
+        const data = { fields: { title: 'String', age: 'Number', number: 'Number', address: 'String' } };
+
+        const response = await request.put(`/cms/content-types/${id}`).send(data);
+
+        expect(response.status).toBe(400);
+        expect(response.body.message).toBe('Name must be required!');
+    });
+    test('Edit content type with missing fields should return 400', async () => {
+        const data = { name: 'test' };
+
+        const response = await request.put(`/cms/content-types/${id}`).send(data);
+
+        expect(response.status).toBe(400);
+        expect(response.body.message).toBe('Fields must be required!');
+    });
+
+    test('Content type fields should include at least one key', async () => {
+        const data = { name: 'test', fields: {} };
+
+        const response = await request.put(`/cms/content-types/${id}`).send(data);
+
+        expect(response.status).toBe(400);
+        expect(response.body.message).toBe('Fields must contain at least one key!');
     });
 
     test('Delete content type', async () => {
