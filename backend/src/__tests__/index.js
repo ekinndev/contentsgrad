@@ -88,8 +88,58 @@ describe('Language', () => {
         expect(response.status).toBe(200);
     });
 });
+describe('Space', () => {
+    let id;
 
-test('Will this work?', async () => {
-    const response = await request.get('/web/me/');
-    expect(response.text).toBe('hello world this is Ekin');
+    test('There should be a no longuage at db', async () => {
+        const response = await request.get('/cms/spaces/');
+
+        expect(response.body.length).toBe(0);
+    });
+    test('Creating a space with empty body should return 400', async () => {
+        const response = await request.post('/cms/spaces');
+
+        expect(response.status).toBe(400);
+        expect(response.body.message).toBeTruthy();
+    });
+
+    test('Create A Space', async () => {
+        const data = {
+            name: 'Turkish',
+            code: 'tr',
+        };
+
+        const response = await request.post('/cms/spaces').send(data);
+
+        expect(response.status).toBe(201);
+        expect(response.body._id).toBeTruthy();
+
+        id = response.body._id;
+    });
+
+    test('At least one language should be in db', async () => {
+        const response = await request.get('/cms/spaces/');
+
+        expect(response.body.length).toBeGreaterThanOrEqual(1);
+        expect(response.status).toBe(200);
+    });
+
+    test('Trying to delete an language with invalid id should return 400', async () => {
+        const response = await request.delete('/cms/spaces/1');
+
+        expect(response.status).toBe(400);
+    });
+
+    test('Trying to delete an space with undefined id should return 400', async () => {
+        const response = await request.delete('/cms/spaces/');
+
+        expect(response.status).toBe(404);
+        expect(response.body.message).toBe('Invalid Route');
+    });
+
+    test('Trying to delete an language should return 200', async () => {
+        const response = await request.delete(`/cms/spaces/${id}`);
+
+        expect(response.status).toBe(200);
+    });
 });
