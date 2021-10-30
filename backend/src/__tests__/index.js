@@ -72,6 +72,8 @@ describe('Language', () => {
 
         expect(response.status).toBe(400);
         expect(response.body.message).toBeTruthy();
+    });
+
     test('At least one language should be in db', async () => {
         const response = await request.get('/cms/languages/');
 
@@ -115,8 +117,7 @@ describe('Space', () => {
 
     test('Create A Space', async () => {
         const data = {
-            name: 'Turkish',
-            code: 'tr',
+            name: 'Desktop',
         };
 
         const response = await request.post('/cms/spaces').send(data);
@@ -125,6 +126,17 @@ describe('Space', () => {
         expect(response.body._id).toBeTruthy();
 
         id = response.body._id;
+    });
+
+    test('Duplicate space name should return 400', async () => {
+        const data = {
+            name: 'Desktop',
+        };
+
+        const response = await request.post('/cms/spaces').send(data);
+
+        expect(response.status).toBe(400);
+        expect(response.body.message).toBeTruthy();
     });
 
     test('At least one language should be in db', async () => {

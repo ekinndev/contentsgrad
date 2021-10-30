@@ -635,6 +635,9 @@ router.delete('/spaces/:id', async (req, res, next) => {
 router.post('/spaces', async (req, res, next) => {
     const { name } = req.body;
 
+    const isExist = await Space.exists({ name: name });
+
+    if (isExist) return next({ message: 'This space already exists!', status: 400 });
     if (!name) return next({ message: 'Name must be required!', status: 400 });
 
     const status = await Space.create({ name });
