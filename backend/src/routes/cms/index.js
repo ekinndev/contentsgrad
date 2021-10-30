@@ -198,13 +198,13 @@ router.get('/content-types', async (req, res, next) => {
 router.put('/content-types/:id', async (req, res, next) => {
     const id = req.params.id;
 
-    const { name, fields } = req.body;
+    const { name, fields, spaces } = req.body;
 
     if (!name) return next({ message: 'Name must be required!', status: 400 });
     if (!fields) return next({ message: 'Fields must be required!', status: 400 });
     if (Object.keys(fields).length <= 0) return next({ message: 'Fields must contain at least one key!', status: 400 });
 
-    const status = await ContentType.updateOne({ _id: id }, { name, fields });
+    const status = await ContentType.updateOne({ _id: id }, { name, fields, spaces });
 
     res.send(status);
 });
