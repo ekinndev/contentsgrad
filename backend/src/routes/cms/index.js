@@ -9,8 +9,6 @@ const Space = require('../../models/space');
 router.get('/content-types/:id', async (req, res, next) => {
     const id = req.params.id;
 
-    if (!id) return next({ message: 'ID must be required!', status: 400 });
-
     const contentType = await ContentType.findOne({ _id: id });
 
     res.send(contentType);
@@ -25,8 +23,6 @@ router.get('/content-types', async (req, res, next) => {
 router.put('/content-types/:id', async (req, res, next) => {
     const id = req.params.id;
 
-    if (!id) return next({ message: 'ID must be required!', status: 400 });
-
     const { name, fields } = req.body;
 
     if (!name) return next({ message: 'Name must be required!', status: 400 });
@@ -40,8 +36,6 @@ router.put('/content-types/:id', async (req, res, next) => {
 
 router.delete('/content-types/:id', async (req, res, next) => {
     const id = req.params.id;
-
-    if (!id) return next({ message: 'ID must be required!', status: 400 });
 
     const status = await ContentType.deleteOne({ _id: id });
 
@@ -69,8 +63,6 @@ router.get('/languages', async (req, res, next) => {
 router.delete('/languages/:id', async (req, res, next) => {
     const id = req.params.id;
 
-    if (!id) return next({ message: 'ID must be required!', status: 400 });
-
     const status = await Language.deleteOne({ _id: id });
 
     res.send(status);
@@ -95,8 +87,6 @@ router.get('/spaces', async (req, res, next) => {
 
 router.delete('/spaces/:id', async (req, res, next) => {
     const id = req.params.id;
-
-    if (!id) return next({ message: 'ID must be required!', status: 400 });
 
     const status = await Space.deleteOne({ _id: id });
 
