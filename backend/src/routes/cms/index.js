@@ -322,9 +322,9 @@ router.delete('/content-types/:id', async (req, res, next) => {
 router.post('/content-types', async (req, res, next) => {
     const { name, fields } = req.body;
 
-    const isExists = await ContentType.exists({ name });
+    const isExist = await ContentType.exists({ name });
 
-    if (isExists) return next({ message: 'This content type already exists!', status: 400 });
+    if (isExist) return next({ message: 'This content type already exists!', status: 400 });
 
     const status = await ContentType.create({ name, fields });
 
