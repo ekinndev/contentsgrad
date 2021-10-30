@@ -116,7 +116,7 @@ router.get('/contents/:contentTypeId', async (req, res, next) => {
 router.put('/contents/:id', async (req, res, next) => {
     const body = req.body;
 
-    const contentKeys = Object.keys(req.body);
+    const contentKeys = Object.keys(req.body.data);
     const id = req.params.id;
 
     const data = await Content.findOne({ _id: id }).populate('contentType');
@@ -145,7 +145,10 @@ router.post('/contents/:contentTypeId', async (req, res, next) => {
 
     const contentTypeIdData = await ContentType.findOne({ _id: cTID });
 
-    const contentKeys = Object.keys(req.body);
+    const contentKeys = Object.keys(req.body.data);
+
+    if (!contentKeys) return next({ status: 400, message: 'Missing fields' });
+
     const fields = Object.fromEntries(contentTypeIdData.fields);
 
     const doesItInclude = contentKeys.every(key => key in fields);
