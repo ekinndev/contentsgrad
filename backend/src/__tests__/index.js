@@ -62,6 +62,16 @@ describe('Language', () => {
         id = response.body._id;
     });
 
+    test('Duplicate language code should return 400', async () => {
+        const data = {
+            name: 'Turkish',
+            code: 'tr',
+        };
+
+        const response = await request.post('/cms/languages').send(data);
+
+        expect(response.status).toBe(400);
+        expect(response.body.message).toBeTruthy();
     test('At least one language should be in db', async () => {
         const response = await request.get('/cms/languages/');
 

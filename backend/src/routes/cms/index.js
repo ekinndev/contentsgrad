@@ -482,6 +482,9 @@ router.delete('/languages/:id', async (req, res, next) => {
 router.post('/languages', async (req, res, next) => {
     const { name, code } = req.body;
 
+    const isExist = await Language.exists({ code: code });
+
+    if (isExist) return next({ message: 'This language already exists!', status: 400 });
     if (!name || !code) return next({ message: 'Name and code must be required!', status: 400 });
 
     const status = await Language.create({ name, code });
