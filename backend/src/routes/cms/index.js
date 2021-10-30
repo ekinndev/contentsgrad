@@ -9,6 +9,8 @@ const Space = require('../../models/space');
 router.get('/content-types/:id', async (req, res, next) => {
     const id = req.params.id;
 
+    if (!id) return next({ message: 'ID must be required!', status: 400 });
+
     const contentType = await ContentType.findOne({ _id: id });
 
     res.send(contentType);
@@ -22,12 +24,14 @@ router.get('/content-types', async (req, res, next) => {
 
 router.put('/content-types/:id', async (req, res, next) => {
     const id = req.params.id;
+
+    if (!id) return next({ message: 'ID must be required!', status: 400 });
+
     const { name, fields } = req.body;
-    const contentTypeData = await ContentType.findOne({ _id: id });
 
-    const doesItInclude = Object.keys(fields).every(key => key in Object.fromEntries(contentTypeData.fields));
-
-    if (!doesItInclude) return next({ message: 'Key Error!', status: 400 });
+    if (!name) return next({ message: 'Name must be required!', status: 400 });
+    if (!fields) return next({ message: 'Fields must be required!', status: 400 });
+    if (Object.keys(fields).length <= 0) return next({ message: 'Fields must contain at least one key!', status: 400 });
 
     const status = await ContentType.updateOne({ _id: id }, { name, fields });
 
@@ -37,6 +41,8 @@ router.put('/content-types/:id', async (req, res, next) => {
 router.delete('/content-types/:id', async (req, res, next) => {
     const id = req.params.id;
 
+    if (!id) return next({ message: 'ID must be required!', status: 400 });
+
     const status = await ContentType.deleteOne({ _id: id });
 
     res.send(status);
@@ -45,13 +51,13 @@ router.delete('/content-types/:id', async (req, res, next) => {
 router.post('/content-types', async (req, res, next) => {
     const { name, fields } = req.body;
 
-    const isExists = await ContentType.exists({ name, fields });
+    const isExists = await ContentType.exists({ name });
 
     if (isExists) return next({ message: 'This content type already exists!', status: 400 });
 
     const status = await ContentType.create({ name, fields });
 
-    res.send(status);
+    res.status(201).send(status);
 });
 // Languages
 router.get('/languages', async (req, res, next) => {
