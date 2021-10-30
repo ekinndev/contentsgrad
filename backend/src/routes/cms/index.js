@@ -53,7 +53,7 @@ router.post('/content-types', async (req, res, next) => {
 
     res.send(status);
 });
-
+// Languages
 router.get('/languages', async (req, res, next) => {
     const languageAllData = await Language.find();
 
@@ -63,6 +63,8 @@ router.get('/languages', async (req, res, next) => {
 router.delete('/languages/:id', async (req, res, next) => {
     const id = req.params.id;
 
+    if (!id) return next({ message: 'ID must be required!', status: 400 });
+
     const status = await Language.deleteOne({ _id: id });
 
     res.send(status);
@@ -71,11 +73,14 @@ router.delete('/languages/:id', async (req, res, next) => {
 router.post('/languages', async (req, res, next) => {
     const { name, code } = req.body;
 
+    if (!name || !code) return next({ message: 'Name and code must be required!', status: 400 });
+
     const status = await Language.create({ name, code });
 
-    res.send(status);
+    res.status(201).send(status);
 });
-
+//
+// Spaces
 router.get('/spaces', async (req, res, next) => {
     const data = await Space.find();
 
@@ -85,6 +90,8 @@ router.get('/spaces', async (req, res, next) => {
 router.delete('/spaces/:id', async (req, res, next) => {
     const id = req.params.id;
 
+    if (!id) return next({ message: 'ID must be required!', status: 400 });
+
     const status = await Space.deleteOne({ _id: id });
 
     res.send(status);
@@ -93,9 +100,11 @@ router.delete('/spaces/:id', async (req, res, next) => {
 router.post('/spaces', async (req, res, next) => {
     const { name } = req.body;
 
+    if (!name) return next({ message: 'Name must be required!', status: 400 });
+
     const status = await Space.create({ name });
 
-    res.send(status);
+    res.status(201).send(status);
 });
 //
 

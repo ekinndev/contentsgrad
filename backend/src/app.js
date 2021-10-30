@@ -4,20 +4,25 @@ const app = express();
 const cmsAppRoutes = require('./routes/cms');
 const webAppRoutes = require('./routes/web');
 
-require('./mongo-connection');
+if (process.env.NODE_ENV !== 'test') {
+    require('./mongo-connection');
+}
 
 app.use(express.json());
 
 app.use('/cms', cmsAppRoutes);
 app.use('/web', webAppRoutes);
 
-app.get('*', (req, res) => {
-    res.send('404');
+app.use('*', (req, res) => {
+    res.status(404).send({ message: 'Invalid Route', status: 404 });
 });
 
 app.use((err, req, res, next) => {
-    const status = err.status || 500;
-    const message = err.message || 'Something broke!';
+    let status = err.status || 500;
+
+    if (err.name) {
+        status = 400; //MongoDB Errors
+    }
 
     res.status(status).send(err);
 });
