@@ -276,7 +276,7 @@ describe('Content', () => {
         expect(response.body.matchedCount).toBe(1);
     });
 
-    test('Delete content should return 201', async () => {
+    test('Delete content should return 200', async () => {
         const response = await request.delete(`/cms/contents/${id}`);
 
         expect(response.status).toBe(200);
