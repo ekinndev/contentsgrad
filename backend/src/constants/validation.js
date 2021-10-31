@@ -24,16 +24,17 @@ const validationTypes = {
 };
 
 const validateContent = (fields, bodyData) => {
-    // console.log(fields, bodyData);
     const validationSchema = {};
 
     Object.keys(fields).forEach(field => {
         const { type, enumData } = fields[field];
 
+        const typeLowerCase = type.toLowerCase();
+
         if (enumData) {
-            validationSchema[field] = validationTypes[type](enumData);
+            validationSchema[field] = validationTypes[typeLowerCase](enumData);
         } else {
-            validationSchema[field] = validationTypes[type]();
+            validationSchema[field] = validationTypes[typeLowerCase]();
         }
     });
 
@@ -44,7 +45,7 @@ const validateContent = (fields, bodyData) => {
         .then(() => {
             return true;
         })
-        .catch(({ errors, fields }) => {
+        .catch(({ errors }) => {
             return errors.map(error => error.message).join(', ');
         });
 };
