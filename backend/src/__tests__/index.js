@@ -350,7 +350,7 @@ describe('Content', () => {
     });
 
     test('Edit content should return 201', async () => {
-        const data = { data: { title: 'hello', age: 'hello', number: 'hello' }, language: languageId };
+        const data = { data: { title: 'hello', age: 1.3, number: 12 }, language: languageId };
 
         const response = await request.put(`/cms/contents/${id}`).send(data);
 
