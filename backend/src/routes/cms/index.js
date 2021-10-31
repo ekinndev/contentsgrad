@@ -6,6 +6,7 @@ const Language = require('../../models/language');
 const Space = require('../../models/space');
 const swaggerOptions = require('../../helpers/swagger');
 const swaggerUi = require('swagger-ui-express');
+const validationContent = require('../../constants/validation');
 
 router.use('/swagger', swaggerUi.serve);
 router.get('/swagger', swaggerUi.setup(swaggerOptions));
@@ -812,6 +813,10 @@ router.put('/contents/:id', async (req, res, next) => {
 
     if (!doesItInclude) return next({ status: 400, message: 'Key error' });
 
+    const validationStatus = await validationContent(fields, req.body.data);
+
+    if (validationStatus !== true) return next({ status: 400, message: validationStatus });
+
     const status = await Content.updateOne({ _id: id }, body);
 
     res.send(status);
@@ -972,6 +977,9 @@ router.post('/contents/:contentTypeId', async (req, res, next) => {
 
     if (!doesItInclude) return next({ status: 400, message: 'Key error' });
 
+    const validationStatus = await validationContent(fields, req.body.data);
+
+    if (validationStatus !== true) return next({ status: 400, message: validationStatus });
     const status = await Content.create({ ...req.body, contentType: cTID });
 
     res.status(201).send(status);
