@@ -147,12 +147,15 @@ router.get('/content-types', async (req, res, next) => {
  *             properties:
  *               name:
  *                 type: string
- *                 description: The name of content type.
- *                 example: news
+ *                 description: The content type's name.
+ *                 example: News
  *               fields:
  *                 type: object
- *                 description: The fields of content type.
- *                 example: { update: Boolean, age: Number }
+ *                 description: The content type's fields.
+ *                 example: {title: {type: rstring }, age: {type: float}, enum: {type: enum, enumData: ['enum4', 'enum5', 'enum6']}, json: {type: object}}
+ *               spaces:
+ *                 type: Array
+ *                 example: [{_id: 617dc748cdbe3a44d4187b16}]
  *     responses:
  *       200:
  *         description: Edit a content type.
@@ -284,7 +287,7 @@ router.delete('/content-types/:id', async (req, res, next) => {
  *               fields:
  *                 type: object
  *                 description: The content type's fields.
- *                 example: {title: String, age: Number}
+ *                 example: {title: {type: string }, age: {type: number}, enum: {type: enum, enumData: ['enum1', 'enum2', 'enum3']}, json: {type: object}}
  *               spaces:
  *                 type: Array
  *                 example: [{_id: 617dc748cdbe3a44d4187b16}]
@@ -980,6 +983,7 @@ router.post('/contents/:contentTypeId', async (req, res, next) => {
     const validationStatus = await validationContent(fields, req.body.data);
 
     if (validationStatus !== true) return next({ status: 400, message: validationStatus });
+
     const status = await Content.create({ ...req.body, contentType: cTID });
 
     res.status(201).send(status);
