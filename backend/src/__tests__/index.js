@@ -200,7 +200,11 @@ describe('Content Type', () => {
     test('Create content type should return 201', async () => {
         const data = {
             name: 'test',
-            fields: { title: { type: 'string' }, age: { type: 'number' }, number: { type: 'number' } },
+            fieldsDatas: [
+                { fieldName: 'title', fieldType: 'string' },
+                { fieldName: 'age', fieldType: 'number' },
+                { fieldName: 'number', fieldType: 'number' },
+            ],
             spaces: [spaceId],
         };
 
@@ -214,7 +218,11 @@ describe('Content Type', () => {
     test('Duplicate content type should return 400', async () => {
         const data = {
             name: 'test',
-            fields: { title: { type: 'string' }, age: { type: 'number' }, number: { type: 'number' } },
+            fieldsDatas: [
+                { fieldName: 'title', fieldType: 'string' },
+                { fieldName: 'age', fieldType: 'number' },
+                { fieldName: 'number', fieldType: 'number' },
+            ],
             spaces: [spaceId],
         };
 
@@ -229,13 +237,17 @@ describe('Content Type', () => {
         expect(response.status).toBe(200);
         expect(response.body.name).toBe('test');
         expect(response.body._id).toBeTruthy();
-        expect(response.body.fields).toBeTruthy();
+        expect(response.body.fieldsDatas).toBeTruthy();
     });
 
     test('Edit content type should return 200', async () => {
         const data = {
             name: 'test',
-            fields: { title: { type: 'string' }, age: { type: 'float' }, number: { type: 'number' } },
+            fieldsDatas: [
+                { fieldName: 'title', fieldType: 'string' },
+                { fieldName: 'age', fieldType: 'number' },
+                { fieldName: 'number', fieldType: 'string' },
+            ],
             spaces: [spaceId],
         };
 
@@ -248,12 +260,11 @@ describe('Content Type', () => {
 
     test('Edit content type with missing name should return 400', async () => {
         const data = {
-            fields: {
-                title: { type: 'string' },
-                age: { type: 'number' },
-                number: { type: 'number' },
-                address: { type: 'string' },
-            },
+            fieldsDatas: [
+                { fieldName: 'title', fieldType: 'string' },
+                { fieldName: 'age', fieldType: 'number' },
+                { fieldName: 'number', fieldType: 'string' },
+            ],
             spaces: [spaceId],
         };
 
@@ -262,22 +273,22 @@ describe('Content Type', () => {
         expect(response.status).toBe(400);
         expect(response.body.message).toBe('Name must be required!');
     });
-    test('Edit content type with missing fields should return 400', async () => {
+    test('Edit content type with missing fieldsDatas should return 400', async () => {
         const data = { name: 'test', spaces: [spaceId] };
 
         const response = await request.put(`/cms/content-types/${id}`).send(data);
 
         expect(response.status).toBe(400);
-        expect(response.body.message).toBe('Fields must be required!');
+        expect(response.body.message).toBe('FieldsDatas must be required!');
     });
 
-    test('Content type fields should include at least one key', async () => {
-        const data = { name: 'test', fields: {}, spaces: [spaceId] };
+    test('Content type fields datas should include at least one item', async () => {
+        const data = { name: 'test', fieldsDatas: [], spaces: [spaceId] };
 
         const response = await request.put(`/cms/content-types/${id}`).send(data);
 
         expect(response.status).toBe(400);
-        expect(response.body.message).toBe('Fields must contain at least one key!');
+        expect(response.body.message).toBe('FieldsDatas must contain at least one key!');
     });
 
     test('Delete content type', async () => {
@@ -304,7 +315,11 @@ describe('Content', () => {
         spaceId = spaceResponse.body._id;
         const contentTypedata = {
             name: 'test',
-            fields: { title: { type: 'String' }, age: { type: 'number' }, number: { type: 'number' } },
+            fieldsDatas: [
+                { fieldName: 'title', fieldType: 'string' },
+                { fieldName: 'age', fieldType: 'number' },
+                { fieldName: 'number', fieldType: 'number' },
+            ],
             spaces: [spaceId],
         };
 
@@ -343,7 +358,7 @@ describe('Content', () => {
         const data = { data: { title: 'aaaa', age: 1.2, number: 10 }, language: languageId };
 
         const response = await request.post(`/cms/contents/${contentTypeId}`).send(data);
-        console.log(languageId, contentTypeId);
+
         expect(response.status).toBe(201);
 
         id = response.body._id;
