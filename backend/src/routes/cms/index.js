@@ -808,15 +808,15 @@ router.put('/contents/:id', async (req, res, next) => {
     const contentKeys = Object.keys(req.body.data);
     const id = req.params.id;
 
-    const data = await Content.findOne({ _id: id }).populate('contentType');
+    const contentTypeIdData = await Content.findOne({ _id: id });
 
-    const fields = Object.fromEntries(data.contentType.fields);
+    const fields = contentTypeIdData.fieldsDatas.map(field => field.fieldName);
 
-    const doesItInclude = contentKeys.every(key => key in fields);
+    const doesItInclude = contentKeys.every(key => fields.includes(key));
 
     if (!doesItInclude) return next({ status: 400, message: 'Key error' });
 
-    const validationStatus = await validationContent(fields, req.body.data);
+    const validationStatus = await validationContent(contentTypeIdData.fieldsDatas, req.body.data);
 
     if (validationStatus !== true) return next({ status: 400, message: validationStatus });
 
@@ -974,13 +974,13 @@ router.post('/contents/:contentTypeId', async (req, res, next) => {
 
     if (!contentKeys) return next({ status: 400, message: 'Missing fields' });
 
-    const fields = Object.fromEntries(contentTypeIdData.fields);
+    const fields = contentTypeIdData.fieldsDatas.map(field => field.fieldName);
 
-    const doesItInclude = contentKeys.every(key => key in fields);
+    const doesItInclude = contentKeys.every(key => fields.includes(key));
 
     if (!doesItInclude) return next({ status: 400, message: 'Key error' });
 
-    const validationStatus = await validationContent(fields, req.body.data);
+    const validationStatus = await validationContent(contentTypeIdData.fieldsDatas, req.body.data);
 
     if (validationStatus !== true) return next({ status: 400, message: validationStatus });
 

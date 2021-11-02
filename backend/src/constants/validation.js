@@ -26,15 +26,15 @@ const validationTypes = {
 const validateContent = (fields, bodyData) => {
     const validationSchema = {};
 
-    Object.keys(fields).forEach(field => {
-        const { type, enumData } = fields[field];
+    fields.forEach(field => {
+        const { fieldName, fieldType, enumData } = field;
 
-        const typeLowerCase = type.toLowerCase();
+        const typeLowerCase = fieldType.toLowerCase();
 
         if (enumData) {
-            validationSchema[field] = validationTypes[typeLowerCase](enumData);
+            validationSchema[fieldName] = validationTypes[typeLowerCase](enumData);
         } else {
-            validationSchema[field] = validationTypes[typeLowerCase]();
+            validationSchema[fieldName] = validationTypes[typeLowerCase]();
         }
     });
 
