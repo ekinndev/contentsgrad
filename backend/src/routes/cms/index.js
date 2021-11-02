@@ -205,8 +205,8 @@ router.put('/content-types/:id', async (req, res, next) => {
     const { name, fieldsDatas, spaces } = req.body;
 
     if (!name) return next({ message: 'Name must be required!', status: 400 });
-    if (!fields) return next({ message: 'Fields must be required!', status: 400 });
-    if (fieldsDatas.length <= 0) return next({ message: 'Fields must contain at least one key!', status: 400 });
+    if (!fieldsDatas) return next({ message: 'FieldsDatas must be required!', status: 400 });
+    if (fieldsDatas.length <= 0) return next({ message: 'FieldsDatas must contain at least one key!', status: 400 });
 
     const status = await ContentType.updateOne({ _id: id }, { name, fieldsDatas, spaces });
 
@@ -808,15 +808,15 @@ router.put('/contents/:id', async (req, res, next) => {
     const contentKeys = Object.keys(req.body.data);
     const id = req.params.id;
 
-    const contentTypeIdData = await Content.findOne({ _id: id });
+    const contentTypeIdData = await Content.findOne({ _id: id }).populate('contentType');
 
-    const fields = contentTypeIdData.fieldsDatas.map(field => field.fieldName);
+    const fields = contentTypeIdData.contentType.fieldsDatas.map(field => field.fieldName);
 
     const doesItInclude = contentKeys.every(key => fields.includes(key));
 
     if (!doesItInclude) return next({ status: 400, message: 'Key error' });
 
-    const validationStatus = await validationContent(contentTypeIdData.fieldsDatas, req.body.data);
+    const validationStatus = await validationContent(contentTypeIdData.contentType.fieldsDatas, req.body.data);
 
     if (validationStatus !== true) return next({ status: 400, message: validationStatus });
 
