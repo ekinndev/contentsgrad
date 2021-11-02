@@ -1,41 +1,20 @@
 const validateContent = require('./validation');
 const dummyFields = {
-    fields: {
-        title: {
-            type: 'string',
-        },
-        content: {
-            type: 'rstring',
-        },
-        age: {
-            type: 'number',
-        },
-        interest: {
-            type: 'float',
-        },
-        email: {
-            type: 'email',
-        },
-        url: {
-            type: 'url',
-        },
-        bool: {
-            type: 'boolean',
-        },
-        date: {
-            type: 'date',
-        },
-        enum: {
-            type: 'enum',
-            enumData: ['enum1', 'enum2', 'enum3'],
-        },
-        json: {
-            type: 'object',
-        },
-    },
+    fieldsDatas: [
+        { fieldName: 'title', fieldType: 'string' },
+        { fieldName: 'content', fieldType: 'rstring' },
+        { filedName: 'age', fieldType: 'number' },
+        { fieldName: 'interest', fieldType: 'float' },
+        { fieldName: 'email', fieldType: 'email' },
+        { fieldName: 'url', fieldType: 'url' },
+        { fieldName: 'bool', fieldType: 'boolean' },
+        { fieldName: 'date', fieldType: 'date' },
+        { fieldName: 'enum', fieldType: 'enum', enumData: ['enum1', 'enum2', 'enum3'] },
+        { fieldlName: 'json', fieldType: 'object' },
+    ],
 };
 
-test('Content Validation', () => {
+test('Validate content successfully', () => {
     const dummyData = {
         data: {
             title: 'test',
@@ -51,7 +30,7 @@ test('Content Validation', () => {
         },
     };
 
-    validateContent(dummyFields.fields, dummyData.data).then(response => {
+    validateContent(dummyFields.fieldsDatas, dummyData.data).then(response => {
         expect(response).toBe(true);
     });
 });
@@ -72,9 +51,8 @@ test('title should throw error', () => {
         },
     };
 
-    validateContent(dummyFields.fields, dummyData.data).then(response => {
-        expect(response.status).toBe(400);
-        expect(response.message).toBeTruthy('title is not a string');
+    validateContent(dummyFields.fieldsDatas, dummyData.data).catch(response => {
+        expect(response).toBeTruthy('title is not a string');
     });
 });
 
@@ -94,9 +72,8 @@ test('title and interest should throw error', () => {
         },
     };
 
-    validateContent(dummyFields.fields, dummyData.data).then(response => {
-        expect(response.status).toBe(400);
-        expect(response.message).toBeTruthy('title is not a string, interest is not a float');
+    validateContent(dummyFields.fieldsDatas, dummyData.data).catch(response => {
+        expect(response).toBeTruthy('title is not a string, interest is not a float');
     });
 });
 test('title, interest, enum should throw error', () => {
@@ -115,9 +92,8 @@ test('title, interest, enum should throw error', () => {
         },
     };
 
-    validateContent(dummyFields.fields, dummyData.data).then(response => {
-        expect(response.status).toBe(400);
-        expect(response.message).toBeTruthy(
+    validateContent(dummyFields.fieldsDatas, dummyData.data).catch(response => {
+        expect(response).toBeTruthy(
             'title is not a string, interest is not a float, enum must be one of enum1, enum2, enum3',
         );
     });
@@ -139,9 +115,8 @@ test('All error', () => {
         },
     };
 
-    validateContent(dummyFields.fields, dummyData.data).then(response => {
-        expect(response.status).toBe(400);
-        expect(response.message).toBeTruthy(
+    validateContent(dummyFields.fieldsDatas, dummyData.data).catch(response => {
+        expect(response).toBeTruthy(
             'title is not a string, content is not a string, age is not a number, interest is not a float, email is not a valid email, url is not a valid url, bool is not a boolean, date is not a date, enum must be one of enum1, enum2, enum3, json is not an object',
         );
     });
