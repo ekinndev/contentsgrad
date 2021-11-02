@@ -149,10 +149,10 @@ router.get('/content-types', async (req, res, next) => {
  *                 type: string
  *                 description: The content type's name.
  *                 example: News
- *               fields:
+ *               fieldsDatas:
  *                 type: object
  *                 description: The content type's fields.
- *                 example: {title: {type: rstring }, age: {type: float}, enum: {type: enum, enumData: ['enum4', 'enum5', 'enum6']}, json: {type: object}}
+ *                 example: [{fieldName: title,fieldType: rstring },{fieldName: age,fieldType: float}, {fieldName: enum,fieldType: enum, enumData: ['enum4', 'enum5', 'enum6']}, {fieldName: json,fieldType: object}]
  *               spaces:
  *                 type: Array
  *                 example: [{_id: 617dc748cdbe3a44d4187b16}]
@@ -284,10 +284,10 @@ router.delete('/content-types/:id', async (req, res, next) => {
  *                 type: string
  *                 description: The content type's name.
  *                 example: News
- *               fields:
+ *               fieldsDatas:
  *                 type: object
  *                 description: The content type's fields.
- *                 example: {title: {type: string }, age: {type: number}, enum: {type: enum, enumData: ['enum1', 'enum2', 'enum3']}, json: {type: object}}
+ *                 example: [{fieldName: title,fieldType: rstring },{fieldName: age,fieldType: float}, {fieldName: enum,fieldType: enum, enumData: ['enum4', 'enum5', 'enum6']}, {fieldName: json,fieldType: object}]
  *               spaces:
  *                 type: Array
  *                 example: [{_id: 617dc748cdbe3a44d4187b16}]
