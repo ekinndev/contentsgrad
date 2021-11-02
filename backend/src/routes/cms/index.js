@@ -202,13 +202,13 @@ router.get('/content-types', async (req, res, next) => {
 router.put('/content-types/:id', async (req, res, next) => {
     const id = req.params.id;
 
-    const { name, fields, spaces } = req.body;
+    const { name, fieldsDatas, spaces } = req.body;
 
     if (!name) return next({ message: 'Name must be required!', status: 400 });
     if (!fields) return next({ message: 'Fields must be required!', status: 400 });
-    if (Object.keys(fields).length <= 0) return next({ message: 'Fields must contain at least one key!', status: 400 });
+    if (fieldsDatas.length <= 0) return next({ message: 'Fields must contain at least one key!', status: 400 });
 
-    const status = await ContentType.updateOne({ _id: id }, { name, fields, spaces });
+    const status = await ContentType.updateOne({ _id: id }, { name, fieldsDatas, spaces });
 
     res.send(status);
 });
@@ -327,13 +327,13 @@ router.delete('/content-types/:id', async (req, res, next) => {
  *
  */
 router.post('/content-types', async (req, res, next) => {
-    const { name, fields, spaces } = req.body;
+    const { name, fieldsDatas, spaces } = req.body;
 
     const isExist = await ContentType.exists({ name });
 
     if (isExist) return next({ message: 'This content type already exists!', status: 400 });
 
-    const status = await ContentType.create({ name, fields, spaces });
+    const status = await ContentType.create({ name, fieldsDatas, spaces });
 
     res.status(201).send(status);
 });
