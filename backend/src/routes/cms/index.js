@@ -8,8 +8,41 @@ const swaggerOptions = require('../../helpers/swagger');
 const swaggerUi = require('swagger-ui-express');
 const validationContent = require('../../constants/validation');
 
+const session = require('express-session');
+const MongoStore = require('connect-mongo');
+const User = require('../../models/user');
+const passport = require('passport');
+const userRouter = require('./user');
+
 router.use('/swagger', swaggerUi.serve);
 router.get('/swagger', swaggerUi.setup(swaggerOptions));
+
+router.use(
+    session({
+        store: MongoStore.create({
+            mongoUrl: process.env.MONGODB_CONNECTION_STRING || 'mongodb://mongodb/test',
+            stringify: false,
+        }),
+        secret: 'thisissupposedtobeasecret',
+        cookie: {
+            maxAge: 14 * 24 * 60 * 60 * 1000,
+            sameSite: process.env.NODE_ENV === 'production' && 'none',
+            secure: process.env.NODE_ENV === 'production',
+        },
+        resave: false,
+        saveUninitialized: false,
+    }),
+);
+
+router.use(passport.initialize());
+router.use(passport.session());
+
+passport.use(User.createStrategy());
+
+passport.serializeUser(User.serializeUser());
+passport.deserializeUser(User.deserializeUser());
+
+router.use('/user', userRouter);
 
 // Content Type Routes
 /**
