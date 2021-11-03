@@ -338,7 +338,7 @@ describe('Content', () => {
     });
 
     test('There should be a no content type at db', async () => {
-        const response2 = await request.get(`/cms/contents/${contentTypeId}`);
+        const response2 = await request.get(`/cms/contents/${contentTypeId}?type=contentType`);
 
         expect(response2.body.length).toBe(0);
     });
