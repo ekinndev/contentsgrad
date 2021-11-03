@@ -44,6 +44,12 @@ passport.deserializeUser(User.deserializeUser());
 
 router.use('/user', userRouter);
 
+const ensureLogin = async (req, res, next) => {
+    if (!req.user) {
+        return next({ message: 'Unauthorized', status: 401 });
+    }
+    next();
+};
 // Content Type Routes
 /**
  * @swagger
@@ -109,7 +115,7 @@ router.use('/user', userRouter);
  *                       message:
  *                          example: Cast to ObjectId failed for value 1 (type string) at path _id for model contentType
  */
-router.get('/content-types/:id', async (req, res, next) => {
+router.get('/content-types/:id', ensureLogin, async (req, res, next) => {
     const id = req.params.id;
 
     const contentType = await ContentType.findOne({ _id: id });
@@ -153,7 +159,7 @@ router.get('/content-types/:id', async (req, res, next) => {
  *                          example: 0
  *
  */
-router.get('/content-types', async (req, res, next) => {
+router.get('/content-types', ensureLogin, async (req, res, next) => {
     const datas = await ContentType.find();
 
     res.send(datas);
@@ -232,7 +238,7 @@ router.get('/content-types', async (req, res, next) => {
  *                       message:
  *                          example: Cast to ObjectId failed for value 1 (type string) at path _id for model contentType
  */
-router.put('/content-types/:id', async (req, res, next) => {
+router.put('/content-types/:id', ensureLogin, async (req, res, next) => {
     const id = req.params.id;
 
     const { name, fieldsDatas, spaces } = req.body;
@@ -293,7 +299,7 @@ router.put('/content-types/:id', async (req, res, next) => {
  *                       message:
  *                          example: Cast to ObjectId failed for value 1 (type string) at path _id for model contentType
  */
-router.delete('/content-types/:id', async (req, res, next) => {
+router.delete('/content-types/:id', ensureLogin, async (req, res, next) => {
     const id = req.params.id;
 
     const status = await ContentType.deleteOne({ _id: id });
@@ -359,7 +365,7 @@ router.delete('/content-types/:id', async (req, res, next) => {
  *                         example: 400
  *
  */
-router.post('/content-types', async (req, res, next) => {
+router.post('/content-types', ensureLogin, async (req, res, next) => {
     const { name, fieldsDatas, spaces } = req.body;
 
     const isExist = await ContentType.exists({ name });
@@ -401,7 +407,7 @@ router.post('/content-types', async (req, res, next) => {
  *                          example: 0
  *
  */
-router.get('/languages', async (req, res, next) => {
+router.get('/languages', ensureLogin, async (req, res, next) => {
     const languageAllData = await Language.find();
 
     res.send(languageAllData);
@@ -456,7 +462,7 @@ router.get('/languages', async (req, res, next) => {
  *                          example: Cast to ObjectId failed for value 1 (type string) at path _id for model language
  */
 
-router.delete('/languages/:id', async (req, res, next) => {
+router.delete('/languages/:id', ensureLogin, async (req, res, next) => {
     const id = req.params.id;
 
     const status = await Language.deleteOne({ _id: id });
@@ -519,7 +525,7 @@ router.delete('/languages/:id', async (req, res, next) => {
  *                         example: 400
  *
  */
-router.post('/languages', async (req, res, next) => {
+router.post('/languages', ensureLogin, async (req, res, next) => {
     const { name, code } = req.body;
 
     const isExist = await Language.exists({ code: code });
@@ -561,7 +567,7 @@ router.post('/languages', async (req, res, next) => {
  *                          example: 0
  *
  */
-router.get('/spaces', async (req, res, next) => {
+router.get('/spaces', ensureLogin, async (req, res, next) => {
     const data = await Space.find();
 
     res.send(data);
@@ -615,7 +621,7 @@ router.get('/spaces', async (req, res, next) => {
  *                       message:
  *                          example: Cast to ObjectId failed for value 1 (type string) at path _id for model language
  */
-router.delete('/spaces/:id', async (req, res, next) => {
+router.delete('/spaces/:id', ensureLogin, async (req, res, next) => {
     const id = req.params.id;
 
     const status = await Space.deleteOne({ _id: id });
@@ -672,7 +678,7 @@ router.delete('/spaces/:id', async (req, res, next) => {
  *                         example: 400
  *
  */
-router.post('/spaces', async (req, res, next) => {
+router.post('/spaces', ensureLogin, async (req, res, next) => {
     const { name } = req.body;
 
     const isExist = await Space.exists({ name: name });
@@ -757,7 +763,7 @@ router.post('/spaces', async (req, res, next) => {
  *                       message:
  *                          example: Cast to ObjectId failed for value 1 (type string) at path _id for model contentType
  */
-router.get('/contents/:id', async (req, res, next) => {
+router.get('/contents/:id', ensureLogin, async (req, res, next) => {
     const id = req.params.id;
 
     const idType = req.query.type;
@@ -871,7 +877,7 @@ router.get('/contents/:id', async (req, res, next) => {
  *                       message:
  *                          example: Cast to ObjectId failed for value 1 (type string) at path _id for model contentType
  */
-router.put('/contents/:id', async (req, res, next) => {
+router.put('/contents/:id', ensureLogin, async (req, res, next) => {
     const body = req.body;
 
     const contentKeys = Object.keys(req.body.data);
@@ -941,7 +947,7 @@ router.put('/contents/:id', async (req, res, next) => {
  *                       message:
  *                          example: Cast to ObjectId failed for value 1 (type string) at path _id for model contentType
  */
-router.delete('/contents/:id', async (req, res, next) => {
+router.delete('/contents/:id', ensureLogin, async (req, res, next) => {
     const id = req.params.id;
 
     const status = await Content.deleteOne({ _id: id });
@@ -1034,7 +1040,7 @@ router.delete('/contents/:id', async (req, res, next) => {
  *                       message:
  *
  */
-router.post('/contents/:contentTypeId', async (req, res, next) => {
+router.post('/contents/:contentTypeId', ensureLogin, async (req, res, next) => {
     const cTID = req.params.contentTypeId;
 
     const contentTypeIdData = await ContentType.findOne({ _id: cTID });

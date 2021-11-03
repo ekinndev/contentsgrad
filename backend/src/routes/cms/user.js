@@ -96,6 +96,13 @@ router.post('/register', async (req, res, next) => {
     res.sendStatus(200);
 });
 
+const preventLoginForLoggedInUsers = (req, res, next) => {
+    if (req.user) {
+        return next({ message: 'User is already logged in', status: 400 });
+    }
+    next();
+};
+
 /**
  * @swagger
  * /user/session/:
@@ -178,11 +185,12 @@ router.post('/register', async (req, res, next) => {
 
 router.post(
     '/session',
+    preventLoginForLoggedInUsers,
     passport.authenticate('local', { failWithError: true }),
     async (req, res) => {
         req.session.userId = req.user._id;
         req.session.save();
-        res.send(req.user);
+        res.status(200).send('OK');
     },
     (err, req, res, next) => {
         if (err.status !== 401) return next(err);
@@ -213,7 +221,7 @@ router.post(
  *
  */
 
-router.get('/logout', function (req, res, next) {
+router.delete('/logout', function (req, res, next) {
     req.logout();
     req.session.destroy();
     res.status(200).send('OK');
