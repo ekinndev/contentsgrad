@@ -1,12 +1,22 @@
 const express = require('express');
-const app = express();
 
 const cmsAppRoutes = require('./routes/cms');
 const webAppRoutes = require('./routes/web');
 
+const logger = require('morgan');
+
+const helmet = require('helmet');
+const compression = require('compression');
+
 if (process.env.NODE_ENV !== 'test') {
     require('./mongo-connection');
 }
+const app = express();
+
+app.use(helmet());
+app.use(compression());
+
+app.use(logger('dev'));
 
 app.use(express.json());
 
