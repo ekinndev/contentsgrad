@@ -20,6 +20,7 @@ const fieldTypesSchema = new Schema(
                 'url',
                 'email',
                 'rstring',
+                'relation',
             ],
         },
         enumData: [{ type: String, lowercase: true }],

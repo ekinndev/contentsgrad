@@ -721,6 +721,24 @@ router.get('/contents/:contentTypeId', async (req, res, next) => {
 
     const datas = await Content.find({ contentType: contentTypeId });
 
+    for (let index = 0; index < datas.length; index++) {
+        const contentTypeRelations = datas[index].contentType.fieldsDatas.filter(
+            ({ fieldType }) => fieldType === 'relation',
+        );
+
+        for (let i = 0; i < contentTypeRelations.length; i++) {
+            const { fieldName, relationFieldName } = contentTypeRelations[i];
+
+            const perRelationData = await Content.findOne({ _id: datas[index].data[fieldName] }).select(
+                '-_id -contentType -language -createdAt -updatedAt  -__v',
+            );
+
+            const perRelationFieldDatas = perRelationData?.data?.[relationFieldName];
+
+            datas[index].data[fieldName] = perRelationFieldDatas ?? null;
+        }
+    }
+
     res.send(datas);
 });
 

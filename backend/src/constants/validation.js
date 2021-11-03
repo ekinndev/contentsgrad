@@ -21,6 +21,9 @@ const validationTypes = {
     email: () => ({
         type: 'email',
     }),
+    relation: () => ({
+        type: 'string',
+    }),
 };
 
 const validateContent = (fields, bodyData) => {
