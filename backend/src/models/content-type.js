@@ -4,7 +4,7 @@ const { Schema } = mongoose;
 
 const fieldTypesSchema = new Schema(
     {
-        fieldName: { type: String, required: true },
+        fieldName: { type: String, required: true, lowercase: true },
         fieldType: {
             type: String,
             required: true,
