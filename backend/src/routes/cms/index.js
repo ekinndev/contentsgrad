@@ -656,17 +656,25 @@ router.post('/spaces', async (req, res, next) => {
 // Contents Routes
 /**
  * @swagger
- * /contents/{contentTypeId}:
+ * /contents/{id}:
  *   get:
  *     tags: [Content]
  *     summary: Retrieve a list of contesnt based on contentTypeId
  *     parameters:
  *       - in: path
- *         name: contentTypeId
+ *         name: id
  *         required: true
  *         description: _id.
  *         schema:
  *           type: string
+ *       - in: query
+ *         name: type
+ *         description: Indicate the type of id
+ *         required: true
+ *         schema:
+ *           type: string
+ *           enum: [contentType, content]
+ *           default: content
  *     responses:
  *       200:
  *         description: Get all contents based on contentTypeId.
@@ -716,10 +724,20 @@ router.post('/spaces', async (req, res, next) => {
  *                       message:
  *                          example: Cast to ObjectId failed for value 1 (type string) at path _id for model contentType
  */
-router.get('/contents/:contentTypeId', async (req, res, next) => {
-    const contentTypeId = req.params.contentTypeId;
+router.get('/contents/:id', async (req, res, next) => {
+    const id = req.params.id;
 
-    const datas = await Content.find({ contentType: contentTypeId });
+    const idType = req.query.type;
+
+    if (!idType) return next({ message: 'Missing field: type', status: 400 });
+
+    let datas;
+
+    if (idType == 'content') {
+        datas = [await Content.findOne({ _id: id })];
+    } else if (idType == 'contentType') {
+        datas = await Content.find({ contentType: id });
+    }
 
     for (let index = 0; index < datas.length; index++) {
         const contentTypeRelations = datas[index].contentType.fieldsDatas.filter(
