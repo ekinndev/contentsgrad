@@ -45,7 +45,7 @@ passport.deserializeUser(User.deserializeUser());
 router.use('/user', userRouter);
 
 const ensureLogin = async (req, res, next) => {
-    if (!req.user) {
+    if (!req.user && process.env.NODE_ENV !== 'test') {
         return next({ message: 'Unauthorized', status: 401 });
     }
     next();
