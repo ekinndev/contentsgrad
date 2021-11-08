@@ -190,7 +190,7 @@ router.post(
     async (req, res) => {
         req.session.userId = req.user._id;
         req.session.save();
-        res.status(200).send('OK');
+        res.status(200).send(req.user);
     },
     (err, req, res, next) => {
         if (err.status !== 401) return next(err);
