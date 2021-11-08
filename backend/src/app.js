@@ -4,6 +4,7 @@ const cmsAppRoutes = require('./routes/cms');
 const webAppRoutes = require('./routes/web');
 
 const logger = require('morgan');
+const cors = require('cors');
 
 const helmet = require('helmet');
 const compression = require('compression');
@@ -16,6 +17,7 @@ const app = express();
 app.use(helmet());
 app.use(compression());
 
+app.use(cors());
 app.use(logger('dev'));
 
 app.use(express.json());
