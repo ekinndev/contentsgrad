@@ -30,6 +30,11 @@ const routes = [
         path: '/content-types/:id',
         component: () => import(/* webpackChunkName: "content-type" */ '../views/ContentTypes.vue'),
     },
+    {
+        // will match everything
+        path: '*',
+        component: () => import(/* webpackChunkName: "not-found" */ '../views/NotFound.vue'),
+    },
 ];
 
 const router = new VueRouter({
