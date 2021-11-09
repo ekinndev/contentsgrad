@@ -36,7 +36,7 @@ export default {
         ...mapActions('account', ['logout']),
     },
     computed: {
-        ...mapState('account', ['contentTypes']),
+        ...mapState('content', ['contentTypes']),
         getMenuItems() {
             if (this.contentTypes?.length > 0) {
                 return [
