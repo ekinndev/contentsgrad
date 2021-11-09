@@ -3,10 +3,14 @@
         <a-layout-sider theme="light" v-model="collapsed" collapsible>
             <a-menu :default-selected-keys="['1']" mode="inline">
                 <a-menu-item v-for="menuItem in getMenuItems" :key="menuItem.key">
-                    <a-icon :type="menuItem.icon" /><span>
-                        <router-link v-if="menuItem.path" :to="menuItem.path" exact> {{ menuItem.title }} </router-link>
-                        <a-button type="link " v-else @click="menuItem.func"> {{ menuItem.title }} </a-button>
-                    </span>
+                    <router-link v-if="menuItem.path" :to="menuItem.path" exact>
+                        <a-icon :type="menuItem.icon" /><span>
+                            {{ convertToCapitalize(menuItem.title) }}
+                        </span>
+                    </router-link>
+                    <a-button class="paddingZero" type="link " v-else @click="menuItem.func" :icon="menuItem.icon">
+                        {{ convertToCapitalize(menuItem.title) }}
+                    </a-button>
                 </a-menu-item>
             </a-menu>
         </a-layout-sider>
@@ -34,6 +38,9 @@ export default {
     },
     methods: {
         ...mapActions('account', ['logout']),
+        convertToCapitalize(val) {
+            return val.slice(0, 1).toUpperCase() + val.slice(1);
+        },
     },
     computed: {
         ...mapState('content', ['contentTypes']),
@@ -92,5 +99,8 @@ export default {
 .centeredRow {
     align-items: center;
     height: 100%;
+}
+.paddingZero {
+    padding: 0;
 }
 </style>
