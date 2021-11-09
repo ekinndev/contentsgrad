@@ -16,8 +16,8 @@
         </a-layout-sider>
         <a-layout>
             <a-layout-content class="layoutContent">
-                <a-row type="flex" justify="center" align="middle" class="centeredRow">
-                    <a-col>
+                <a-row type="flex" justify="center" align="middle">
+                    <a-col :span="24">
                         <slot />
                     </a-col>
                 </a-row>
@@ -96,10 +96,7 @@ export default {
 .layoutMinHeight {
     min-height: 100vh;
 }
-.centeredRow {
-    align-items: center;
-    height: 100%;
-}
+
 .paddingZero {
     padding: 0;
 }
