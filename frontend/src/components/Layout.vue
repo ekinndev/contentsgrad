@@ -53,7 +53,7 @@ export default {
                         title: 'Home',
                         path: '/',
                     },
-                    ...this.contentTypes?.map?.(contentType => ({
+                    ...this.contentTypes.map(contentType => ({
                         key: contentType._id,
                         title: contentType.name,
                         icon: 'file-text',
