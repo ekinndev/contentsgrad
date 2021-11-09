@@ -1,6 +1,6 @@
 <template>
     <a-layout class="layoutMinHeight">
-        <a-layout-sider theme="light" v-model="collapsed" collapsible>
+        <a-layout-sider theme="light" v-model="collapsed" collapsible v-if="getMenuItems.length > 0">
             <a-menu :default-selected-keys="['1']" mode="inline">
                 <a-menu-item v-for="menuItem in getMenuItems" :key="menuItem.key">
                     <router-link v-if="menuItem.path" :to="menuItem.path" exact>
@@ -69,22 +69,10 @@ export default {
                             this.$router.replace('/login');
                         },
                     },
+                    { key: '3', icon: 'setting', title: 'Content Types', path: '/settings/content-types' },
                 ];
             }
-            return [
-                {
-                    key: '1',
-                    icon: 'setting',
-                    title: 'Settings',
-                    path: '/settings',
-                },
-                {
-                    key: '3',
-                    icon: 'login',
-                    title: 'Log in',
-                    path: '/login',
-                },
-            ];
+            return [];
         },
     },
 };
