@@ -4,6 +4,12 @@ const User = require('../../models/user');
 const Validator = require('async-validator').default;
 const router = express.Router();
 
+const ensureLogin = async (req, res, next) => {
+    if (!req.user && process.env.NODE_ENV !== 'test') {
+        return next({ message: 'Unauthorized', status: 401 });
+    }
+    next();
+};
 /**
  * @swagger
  * /user/register/:
@@ -202,6 +208,42 @@ router.post(
         });
     },
 );
+
+/**
+ * @swagger
+ * /user/profile/:
+ *   get:
+ *     tags: [User]
+ *     summary: To get current logged in user
+ *     responses:
+ *       200:
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                  _id:
+ *                      type: string
+ *                      example: 6182c206874844d37934bfcb
+ *                  name:
+ *                      type: string
+ *                      example: ekin
+ *                  email:
+ *                      type: string
+ *                      example: hello@test.com
+ *                  createdAt:
+ *                      type: string
+ *                      example: 2021-11-03T17:08:22.823Z
+ *                  updatedAt:
+ *                      type: string
+ *                      example: 2021-11-03T17:08:22.823Z
+ *
+ *
+ *
+ */
+router.get('/profile', ensureLogin, function (req, res, next) {
+    res.status(200).send(req.user);
+});
 
 /**
  * @swagger
