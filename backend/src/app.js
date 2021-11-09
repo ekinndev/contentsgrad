@@ -17,7 +17,12 @@ const app = express();
 app.use(helmet());
 app.use(compression());
 
-app.use(cors());
+app.use(
+    cors({
+        origin: process.env.NODE_ENV === 'production' ? 'http://example.com' : true,
+        credentials: true,
+    }),
+);
 app.use(logger('dev'));
 
 app.use(express.json());
