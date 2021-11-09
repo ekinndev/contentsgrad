@@ -6,6 +6,8 @@ const contentModule = {
         spaces: undefined,
         languages: undefined,
         contentTypes: undefined,
+        contents: undefined,
+        content: undefined,
     }),
     mutations: {
         setContentTypes(state, contentTypes) {
@@ -16,6 +18,9 @@ const contentModule = {
         },
         setSpaces(state, spaces) {
             state.spaces = spaces;
+        },
+        setContents(state, contents) {
+            state.contents = contents;
         },
     },
     actions: {
@@ -30,6 +35,10 @@ const contentModule = {
         async getSpaces({ commit }) {
             const spaces = await cmsApi.get('/spaces');
             commit('setSpaces', spaces.data);
+        },
+        async getContentsOfContentTypes({ commit }, data) {
+            const contentTypes = await cmsApi.get(`/contents/${data}?type=contentType`);
+            commit('setContents', contentTypes.data);
         },
     },
     getters: {},
