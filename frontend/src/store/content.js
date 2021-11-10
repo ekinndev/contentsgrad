@@ -40,6 +40,14 @@ const contentModule = {
             const contentTypes = await cmsApi.get(`/contents/${data}?type=contentType`);
             commit('setContents', contentTypes.data);
         },
+        async addSpace({ dispatch }, data) {
+            await cmsApi.post('/spaces', data);
+            await dispatch('getSpaces');
+        },
+        async deleteSpace({ dispatch }, data) {
+            await cmsApi.delete(`/spaces/${data}`);
+            await dispatch('getSpaces');
+        },
     },
     getters: {},
 };
