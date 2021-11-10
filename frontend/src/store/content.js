@@ -48,6 +48,14 @@ const contentModule = {
             await cmsApi.delete(`/spaces/${data}`);
             await dispatch('getSpaces');
         },
+        async addLanguage({ dispatch }, data) {
+            await cmsApi.post('/languages', data);
+            await dispatch('getLanguages');
+        },
+        async deleteLanguage({ dispatch }, data) {
+            await cmsApi.delete(`/languages/${data}`);
+            await dispatch('getLanguages');
+        },
     },
     getters: {},
 };
