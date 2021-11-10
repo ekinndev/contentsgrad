@@ -10,7 +10,7 @@
                             placement="top"
                             ok-text="Yes"
                             cancel-text="No"
-                            @confirm="deleteSpace(actionProps)"
+                            @confirm="deleteSpaceHandler(actionProps)"
                         >
                             <template slot="title">
                                 <p>Are you sure to delete this space?</p>
@@ -25,7 +25,7 @@
 </template>
 
 <script>
-import { mapState } from 'vuex';
+import { mapState, mapActions } from 'vuex';
 import Box from '@/components/Box.vue';
 
 const columns = [
@@ -46,8 +46,10 @@ const columns = [
 export default {
     components: { Box },
     methods: {
-        deleteSpace({ id }) {
-            console.log(id);
+        ...mapActions('content', ['deleteSpace']),
+
+        async deleteSpaceHandler({ id }) {
+            await this.deleteSpace(id);
         },
 
         handleButton() {

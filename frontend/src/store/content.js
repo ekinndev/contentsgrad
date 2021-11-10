@@ -44,6 +44,10 @@ const contentModule = {
             await cmsApi.post('/spaces', data);
             await dispatch('getSpaces');
         },
+        async deleteSpace({ dispatch }, data) {
+            await cmsApi.delete(`/spaces/${data}`);
+            await dispatch('getSpaces');
+        },
     },
     getters: {},
 };
