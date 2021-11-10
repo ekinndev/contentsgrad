@@ -2,16 +2,28 @@
     <a-layout class="layoutMinHeight">
         <a-layout-sider theme="light" v-model="collapsed" collapsible v-if="getMenuItems.length > 0">
             <a-menu :default-selected-keys="['1']" mode="inline">
-                <a-menu-item v-for="menuItem in getMenuItems" :key="menuItem.key">
-                    <router-link v-if="menuItem.path" :to="menuItem.path" exact>
-                        <a-icon :type="menuItem.icon" /><span>
+                <template v-for="menuItem in getMenuItems">
+                    <a-sub-menu :key="menuItem.key" v-if="menuItem.subMenu">
+                        <span slot="title"
+                            ><a-icon :type="menuItem.icon" /><span>{{ menuItem.title }}</span></span
+                        >
+                        <a-menu-item v-for="submenu in menuItem.subMenu" :key="submenu.key">
+                            <router-link v-if="submenu.path" :to="submenu.path" exact>
+                                <a-icon :type="submenu.icon" /><span>{{ submenu.title }}</span>
+                            </router-link>
+                        </a-menu-item>
+                    </a-sub-menu>
+                    <a-menu-item :key="menuItem.key" v-else>
+                        <router-link v-if="menuItem.path" :to="menuItem.path" exact>
+                            <a-icon :type="menuItem.icon" /><span>
+                                {{ convertToCapitalize(menuItem.title) }}
+                            </span>
+                        </router-link>
+                        <a-button class="paddingZero" type="link " v-else @click="menuItem.func" :icon="menuItem.icon">
                             {{ convertToCapitalize(menuItem.title) }}
-                        </span>
-                    </router-link>
-                    <a-button class="paddingZero" type="link " v-else @click="menuItem.func" :icon="menuItem.icon">
-                        {{ convertToCapitalize(menuItem.title) }}
-                    </a-button>
-                </a-menu-item>
+                        </a-button>
+                    </a-menu-item>
+                </template>
             </a-menu>
         </a-layout-sider>
         <a-layout>
@@ -69,7 +81,17 @@ export default {
                             this.$router.replace('/login');
                         },
                     },
-                    { key: '3', icon: 'setting', title: 'Content Types', path: '/settings/content-types' },
+                    {
+                        key: '3',
+                        icon: 'setting',
+                        title: 'Settings',
+                        path: '',
+                        subMenu: [
+                            { key: '4', icon: 'setting', title: 'Content Types', path: '/settings/content-types' },
+                            { key: '5', icon: 'setting', title: 'Spaces', path: '/settings/spaces' },
+                            { key: '6', icon: 'setting', title: 'Languages', path: '/settings/languages' },
+                        ],
+                    },
                 ];
             }
             return [];
