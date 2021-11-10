@@ -51,7 +51,7 @@ export default {
         },
 
         handleButton() {
-            console.log('LOL');
+            this.$router.push('/settings/spaces/add');
         },
     },
     computed: {
