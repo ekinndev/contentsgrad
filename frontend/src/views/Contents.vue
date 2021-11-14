@@ -39,7 +39,7 @@ export default {
             this.getContentsOfContentTypes(id);
         },
         async deleteContentHandler({ id }) {
-            await this.deleteContent(id);
+            await this.deleteContent({ id, contentTypeId: this.$route.params.contentTypeId });
         },
         async editContent({ id }) {
             console.log(id);
@@ -70,9 +70,9 @@ export default {
             ];
         },
         tableData() {
-            return (this.contents ?? []).map(({ data }, i) => {
+            return (this.contents ?? []).map(({ data, _id }, i) => {
                 return {
-                    id: i,
+                    id: _id,
                     key: i,
                     ...data,
                 };

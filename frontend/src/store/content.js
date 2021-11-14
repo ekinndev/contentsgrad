@@ -55,6 +55,11 @@ const contentModule = {
 
             return contentTypes.data;
         },
+        async deleteContent({ dispatch }, data) {
+            await cmsApi.delete(`/contents/${data.id}`);
+
+            await dispatch('getContentsOfContentTypes', data.contentTypeId);
+        },
         async addSpace({ dispatch }, data) {
             await cmsApi.post('/spaces', data);
             await dispatch('getSpaces');
