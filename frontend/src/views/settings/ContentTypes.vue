@@ -64,7 +64,7 @@ export default {
             console.log(id);
         },
         handleButton() {
-            console.log('LOL');
+            this.$router.push('/settings/content-types/add');
         },
     },
     computed: {
