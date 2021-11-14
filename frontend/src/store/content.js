@@ -28,6 +28,11 @@ const contentModule = {
             const contentTypes = await cmsApi.get('/content-types');
             commit('setContentTypes', contentTypes.data);
         },
+        async getContentType(_, data) {
+            const contentTypes = await cmsApi.get(`/content-types/${data}`);
+
+            return contentTypes.data;
+        },
         async getLanguages({ commit }) {
             const languages = await cmsApi.get('/languages');
             commit('setLanguages', languages.data);
@@ -39,6 +44,16 @@ const contentModule = {
         async getContentsOfContentTypes({ commit }, data) {
             const contentTypes = await cmsApi.get(`/contents/${data}?type=contentType`);
             commit('setContents', contentTypes.data);
+        },
+        async getContentsOfRelation(_, data) {
+            const contentTypes = await cmsApi.get(`/contents/${data}?type=contentType`);
+
+            return contentTypes.data;
+        },
+        async addContent(_, data) {
+            const contentTypes = await cmsApi.post(`/contents/${data.contentTypeId}?type=contentType`, data.reqPayload);
+
+            return contentTypes.data;
         },
         async addSpace({ dispatch }, data) {
             await cmsApi.post('/spaces', data);
