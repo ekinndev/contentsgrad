@@ -76,8 +76,9 @@ const routes = [
         component: () => import(/* webpackChunkName: "about" */ '../views/settings/Languages.vue'),
     },
     {
-        path: '/content-types/:id',
-        component: () => import(/* webpackChunkName: "content-type" */ '../views/ContentTypes.vue'),
+        path: '/contents/:contentTypeId/add',
+        component: () => import(/* webpackChunkName: "content-type" */ '../views/AddContent.vue'),
+    },
     {
         path: '/contents/:contentTypeId',
         component: () => import(/* webpackChunkName: "content-type" */ '../views/Contents.vue'),
