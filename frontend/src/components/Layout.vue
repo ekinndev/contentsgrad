@@ -69,7 +69,7 @@ export default {
                         key: contentType._id,
                         title: contentType.name,
                         icon: 'file-text',
-                        path: `/content-types/${contentType._id}`,
+                        path: `/contents/${contentType._id}`,
                     })),
                     {
                         key: '2',

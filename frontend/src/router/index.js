@@ -78,6 +78,9 @@ const routes = [
     {
         path: '/content-types/:id',
         component: () => import(/* webpackChunkName: "content-type" */ '../views/ContentTypes.vue'),
+    {
+        path: '/contents/:contentTypeId',
+        component: () => import(/* webpackChunkName: "content-type" */ '../views/Contents.vue'),
     },
     {
         // will match everything
