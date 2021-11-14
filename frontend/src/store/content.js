@@ -56,6 +56,10 @@ const contentModule = {
             await cmsApi.post(`/content-types`, data);
             await dispatch('getContentTypes');
         },
+        async deleteContentType({ dispatch }, data) {
+            await cmsApi.delete(`/content-types/${data}`);
+            await dispatch('getContentTypes');
+        },
         async deleteLanguage({ dispatch }, data) {
             await cmsApi.delete(`/languages/${data}`);
             await dispatch('getLanguages');
