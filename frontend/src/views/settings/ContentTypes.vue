@@ -15,7 +15,7 @@
                             placement="top"
                             ok-text="Yes"
                             cancel-text="No"
-                            @confirm="deleteContentType(actionProps)"
+                            @confirm="deleteContentTypeHandler(actionProps)"
                         >
                             <template slot="title">
                                 <p>Are you sure to delete this content type?</p>
@@ -30,7 +30,7 @@
 </template>
 
 <script>
-import { mapState } from 'vuex';
+import { mapState, mapActions } from 'vuex';
 import Box from '@/components/Box.vue';
 
 const columns = [
@@ -57,8 +57,9 @@ const columns = [
 export default {
     components: { Box },
     methods: {
-        deleteContentType({ id }) {
-            console.log(id);
+        ...mapActions('content', ['deleteContentType']),
+        async deleteContentTypeHandler({ id }) {
+            await this.deleteContentType(id);
         },
         editContentType({ id }) {
             console.log(id);
