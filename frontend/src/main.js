@@ -12,7 +12,7 @@ Vue.config.productionTip = false;
 Vue.use(Antd);
 
 new Vue({
-    router,
+    router: router(store),
     store,
     i18n,
     render: h => h(App),
