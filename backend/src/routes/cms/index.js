@@ -1,12 +1,12 @@
 const express = require('express');
 const router = express.Router();
 const ContentType = require('../../models/content-type');
-const Content = require('../../models/content');
 const Language = require('../../models/language');
 const Space = require('../../models/space');
 const swaggerOptions = require('../../helpers/swagger');
 const swaggerUi = require('swagger-ui-express');
 const validationContent = require('../../constants/validation');
+const getOrGenerateDynamicSchema = require('../../helpers/getOrGenerateDynamicSchema');
 
 const session = require('express-session');
 const MongoStore = require('connect-mongo');
@@ -714,6 +714,13 @@ router.post('/spaces', ensureLogin, async (req, res, next) => {
  *           type: string
  *           enum: [contentType, content]
  *           default: content
+ *       - in: query
+ *         name: contentType
+ *         description: Indicate the name of contentType
+ *         required: true
+ *         schema:
+ *           type: string
+ *           default: news
  *     responses:
  *       200:
  *         description: Get all contents based on contentTypeId.
@@ -772,10 +779,16 @@ router.get('/contents/:id', ensureLogin, async (req, res, next) => {
 
     let datas;
 
+    const contentTypeName = req.query.contentType;
+
+    if (!contentTypeName) return next({ status: 400, message: 'Missing field: contentType' });
+
+    const Schema = getOrGenerateDynamicSchema(contentTypeName);
+
     if (idType == 'content') {
-        datas = [await Content.findOne({ _id: id })];
+        datas = [await Schema.findOne({ _id: id })];
     } else if (idType == 'contentType') {
-        datas = await Content.find({ contentType: id });
+        datas = await Schema.find({ contentType: id });
     }
 
     for (let index = 0; index < datas.length; index++) {
@@ -784,11 +797,12 @@ router.get('/contents/:id', ensureLogin, async (req, res, next) => {
         );
 
         for (let i = 0; i < contentTypeRelations.length; i++) {
-            const { fieldName, relationFieldName } = contentTypeRelations[i];
+            const { fieldName, relationFieldName, relationContentTypeId } = contentTypeRelations[i];
+            const RelationSchema = getOrGenerateDynamicSchema(relationContentTypeId?.name);
 
-            const perRelationData = await Content.findOne({ _id: datas[index].data[fieldName] }).select(
-                '-_id -contentType -language -createdAt -updatedAt  -__v',
-            );
+            const perRelationData = await RelationSchema.findOne({
+                _id: datas[index].data[fieldName],
+            }).select('-_id -contentType -language -createdAt -updatedAt  -__v');
 
             const perRelationFieldDatas = perRelationData?.data?.[relationFieldName];
 
@@ -883,19 +897,25 @@ router.put('/contents/:id', ensureLogin, async (req, res, next) => {
     const contentKeys = Object.keys(req.body.data);
     const id = req.params.id;
 
-    const contentTypeIdData = await Content.findOne({ _id: id }).populate('contentType');
+    const contentTypeName = req.query.contentType;
 
-    const fields = contentTypeIdData.contentType.fieldsDatas.map(field => field.fieldName);
+    if (!contentTypeName) return next({ status: 400, message: 'Missing field: contentType' });
+
+    const contentTypeIdData = await ContentType.findOne({ name: contentTypeName });
+
+    const Schema = getOrGenerateDynamicSchema(contentTypeIdData.name);
+
+    const fields = contentTypeIdData.fieldsDatas.map(field => field.fieldName);
 
     const doesItInclude = contentKeys.every(key => fields.includes(key));
 
     if (!doesItInclude) return next({ status: 400, message: 'Key error' });
 
-    const validationStatus = await validationContent(contentTypeIdData.contentType.fieldsDatas, req.body.data);
+    const validationStatus = await validationContent(contentTypeIdData.fieldsDatas, req.body.data);
 
     if (validationStatus !== true) return next({ status: 400, message: validationStatus });
 
-    const status = await Content.updateOne({ _id: id }, body);
+    const status = await Schema.updateOne({ _id: id }, body);
 
     res.send(status);
 });
@@ -949,8 +969,13 @@ router.put('/contents/:id', ensureLogin, async (req, res, next) => {
  */
 router.delete('/contents/:id', ensureLogin, async (req, res, next) => {
     const id = req.params.id;
+    const contentTypeName = req.query.contentType;
 
-    const status = await Content.deleteOne({ _id: id });
+    if (!contentTypeName) return next({ status: 400, message: 'Missing field: contentType' });
+
+    const Schema = getOrGenerateDynamicSchema(contentTypeName);
+
+    const status = await Schema.deleteOne({ _id: id });
 
     res.send(status);
 });
@@ -1045,6 +1070,8 @@ router.post('/contents/:contentTypeId', ensureLogin, async (req, res, next) => {
 
     const contentTypeIdData = await ContentType.findOne({ _id: cTID });
 
+    const Schema = getOrGenerateDynamicSchema(contentTypeIdData.name);
+
     const contentKeys = Object.keys(req.body.data);
 
     if (!contentKeys) return next({ status: 400, message: 'Missing fields' });
@@ -1059,7 +1086,7 @@ router.post('/contents/:contentTypeId', ensureLogin, async (req, res, next) => {
 
     if (validationStatus !== true) return next({ status: 400, message: validationStatus });
 
-    const status = await Content.create({ ...req.body, contentType: cTID });
+    const status = await Schema.create({ ...req.body, contentType: cTID });
 
     res.status(201).send(status);
 });

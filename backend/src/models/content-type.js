@@ -25,7 +25,7 @@ const fieldTypesSchema = new Schema(
         },
         enumData: [{ type: String, lowercase: true }],
         relationFieldName: { type: String, lowercase: true, default: '' },
-        relationContentTypeId: { type: mongoose.Types.ObjectId },
+        relationContentTypeId: { type: mongoose.Types.ObjectId, ref: 'contentType', autopopulate: true },
     },
     { _id: false },
 );
@@ -43,4 +43,5 @@ const contentTypeSchema = new Schema(
 );
 
 contentTypeSchema.plugin(require('mongoose-autopopulate'));
+fieldTypesSchema.plugin(require('mongoose-autopopulate'));
 module.exports = mongoose.model('contentType', contentTypeSchema);
