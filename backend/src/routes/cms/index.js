@@ -778,8 +778,13 @@ router.get('/contents/:id', ensureLogin, async (req, res, next) => {
     if (!idType) return next({ message: 'Missing field: type', status: 400 });
 
     let datas;
+    let contentTypeName;
 
-    const contentTypeName = req.query.contentType;
+    if (idType == 'content') {
+        contentTypeName = req.query.contentType;
+    } else if (idType == 'contentType') {
+        contentTypeName = (await ContentType.findOne({ _id: id })).name;
+    }
 
     if (!contentTypeName) return next({ status: 400, message: 'Missing field: contentType' });
 

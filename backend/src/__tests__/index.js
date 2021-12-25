@@ -302,6 +302,7 @@ describe('Content Type', () => {
 describe('Content', () => {
     let id;
     let contentTypeId;
+    let contentTypeName;
     let spaceId;
     let languageId;
 
@@ -326,6 +327,7 @@ describe('Content', () => {
         const contentTypeResponse = await request.post('/cms/content-types/').send(contentTypedata);
 
         contentTypeId = contentTypeResponse.body._id;
+        contentTypeName = contentTypeResponse.body.name;
 
         const languageData = {
             name: 'Turkish',
@@ -367,7 +369,7 @@ describe('Content', () => {
     test('Edit content should return 201', async () => {
         const data = { data: { title: 'hello', age: 1.3, number: 12 }, language: languageId };
 
-        const response = await request.put(`/cms/contents/${id}`).send(data);
+        const response = await request.put(`/cms/contents/${id}?contentType=${contentTypeName}`).send(data);
 
         expect(response.status).toBe(200);
         expect(response.body.modifiedCount).toBe(1);
@@ -375,7 +377,7 @@ describe('Content', () => {
     });
 
     test('Delete content should return 200', async () => {
-        const response = await request.delete(`/cms/contents/${id}`);
+        const response = await request.delete(`/cms/contents/${id}?contentType=${contentTypeName}`);
         expect(response.status).toBe(200);
     });
 });
