@@ -8,7 +8,18 @@ module.exports = {
         parser: '@babel/eslint-parser',
     },
     rules: {
-        'prettier/prettier': ['error', { endOfLine: 'auto' }],
+        'prettier/prettier': [
+            'error',
+            {
+                printWidth: 120,
+                singleQuote: true,
+                tabWidth: 4,
+                semi: true,
+                trailingComma: 'all',
+                arrowParens: 'avoid',
+                endOfLine: 'auto',
+            },
+        ],
         'no-console': process.env.NODE_ENV === 'production' ? 'warn' : 'off',
         'no-debugger': process.env.NODE_ENV === 'production' ? 'warn' : 'off',
     },
