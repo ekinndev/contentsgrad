@@ -56,6 +56,7 @@ export default {
     },
     computed: {
         ...mapState('content', ['contentTypes']),
+        ...mapState('account', ['user']),
         getMenuItems() {
             const defaultMenuItems = [
                 {
@@ -97,7 +98,7 @@ export default {
                         path: `/${contentType.name}/contents/${contentType._id}`,
                     })),
                 ];
-            } else if (this.contentTypes !== undefined) {
+            } else if (this.contentTypes !== undefined && this.user) {
                 return defaultMenuItems;
             }
             return [];
