@@ -108,7 +108,7 @@ export default {
 
         if (relationalFields.length > 0) {
             for (const field of relationalFields) {
-                const data = await this.getContentsOfRelation(field.relationContentTypeId);
+                const data = await this.getContentsOfRelation(field.relationContentTypeId?._id);
                 this.contentsOfRelation[field.fieldName] = data.map(content => ({ ...content.data, _id: content._id }));
                 this.contentsOfRelation = { ...this.contentsOfRelation };
             }
