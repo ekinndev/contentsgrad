@@ -57,42 +57,48 @@ export default {
     computed: {
         ...mapState('content', ['contentTypes']),
         getMenuItems() {
+            const defaultMenuItems = [
+                {
+                    key: '1',
+                    icon: 'home',
+                    title: 'Home',
+                    path: '/',
+                },
+                {
+                    key: '2',
+                    icon: 'logout',
+                    title: 'Log out',
+                    path: null,
+                    func: async () => {
+                        await this.logout();
+                        this.$router.replace('/login');
+                    },
+                },
+                {
+                    key: '3',
+                    icon: 'setting',
+                    title: 'Settings',
+                    path: '',
+                    subMenu: [
+                        { key: '4', icon: 'setting', title: 'Content Types', path: '/settings/content-types' },
+                        { key: '5', icon: 'setting', title: 'Spaces', path: '/settings/spaces' },
+                        { key: '6', icon: 'setting', title: 'Languages', path: '/settings/languages' },
+                    ],
+                },
+            ];
+
             if (this.contentTypes?.length > 0) {
                 return [
-                    {
-                        key: '1',
-                        icon: 'home',
-                        title: 'Home',
-                        path: '/',
-                    },
+                    ...defaultMenuItems,
                     ...this.contentTypes.map(contentType => ({
                         key: contentType._id,
                         title: contentType.name,
                         icon: 'file-text',
-                        path: `/contents/${contentType._id}`,
+                        path: `/${contentType.name}/contents/${contentType._id}`,
                     })),
-                    {
-                        key: '2',
-                        icon: 'logout',
-                        title: 'Log out',
-                        path: null,
-                        func: async () => {
-                            await this.logout();
-                            this.$router.replace('/login');
-                        },
-                    },
-                    {
-                        key: '3',
-                        icon: 'setting',
-                        title: 'Settings',
-                        path: '',
-                        subMenu: [
-                            { key: '4', icon: 'setting', title: 'Content Types', path: '/settings/content-types' },
-                            { key: '5', icon: 'setting', title: 'Spaces', path: '/settings/spaces' },
-                            { key: '6', icon: 'setting', title: 'Languages', path: '/settings/languages' },
-                        ],
-                    },
                 ];
+            } else if (this.contentTypes !== undefined) {
+                return defaultMenuItems;
             }
             return [];
         },
