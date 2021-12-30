@@ -53,17 +53,25 @@ const ensureLogin = async (req, res, next) => {
 // Content Type Routes
 /**
  * @swagger
- * /content-types/{id}:
+ * /content-types/{idOrName}:
  *   get:
  *     tags: [Content Type]
  *     summary: Retrieve a content type
  *     parameters:
  *       - in: path
- *         name: id
+ *         name: idOrName
  *         required: true
- *         description: _id.
+ *         description: _id or content type name.
  *         schema:
  *           type: string
+ *       - in: query
+ *         name: type
+ *         description: Indicate the key of either id or name of the content type
+ *         required: true
+ *         schema:
+ *           type: string
+ *           enum: [name, id]
+ *           default: id
  *     responses:
  *       200:
  *         description: Get a content type.
@@ -115,10 +123,12 @@ const ensureLogin = async (req, res, next) => {
  *                       message:
  *                          example: Cast to ObjectId failed for value 1 (type string) at path _id for model contentType
  */
-router.get('/content-types/:id', ensureLogin, async (req, res, next) => {
-    const id = req.params.id;
+router.get('/content-types/:idOrName', ensureLogin, async (req, res, next) => {
+    const type = req.query.type;
 
-    const contentType = await ContentType.findOne({ _id: id });
+    const idOrName = req.params.idOrName;
+
+    const contentType = await ContentType.findOne(type == 'name' ? { name: idOrName } : { _id: idOrName });
 
     res.send(contentType);
 });
@@ -831,6 +841,13 @@ router.get('/contents/:id', ensureLogin, async (req, res, next) => {
  *         description: _id.
  *         schema:
  *           type: string
+ *       - in: query
+ *         name: contentType
+ *         description: Indicate the name of contentType
+ *         required: true
+ *         schema:
+ *           type: string
+ *           default: news
  *     requestBody:
  *       required: true
  *       content:

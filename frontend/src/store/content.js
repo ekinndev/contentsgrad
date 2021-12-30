@@ -29,7 +29,14 @@ const contentModule = {
             commit('setContentTypes', contentTypes.data);
         },
         async getContentType(_, data) {
-            const contentTypes = await cmsApi.get(`/content-types/${data}`);
+            const contentTypes = await cmsApi.get(`/content-types/${data.payload}?type=${data.edit ? 'name' : 'id'}`);
+
+            return contentTypes.data;
+        },
+        async getContent(_, data) {
+            const contentTypes = await cmsApi.get(
+                `/contents/${data.contentId}?type=content&contentType=${data.contentTypeName}`,
+            );
 
             return contentTypes.data;
         },
@@ -54,6 +61,14 @@ const contentModule = {
             const contentTypes = await cmsApi.post(`/contents/${data.contentTypeId}?type=contentType`, data.reqPayload);
 
             return contentTypes.data;
+        },
+        async editContent(_, data) {
+            const editContentResponse = await cmsApi.put(
+                `/contents/${data.contentId}?contentType=${data.contentTypeName}`,
+                { data: data.payload },
+            );
+
+            return editContentResponse.data;
         },
         async deleteContent({ dispatch }, data) {
             await cmsApi.delete(`/contents/${data.id}?contentType=${data.contentTypeName}`);

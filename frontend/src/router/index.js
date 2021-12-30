@@ -113,7 +113,16 @@ export default function init(store) {
             },
             {
                 path: '/contents/:contentTypeId/add',
-                component: () => import(/* webpackChunkName: "content-type" */ '../views/AddContent.vue'),
+                component: () => import(/* webpackChunkName: "content-type" */ '../views/EditOrAddContent.vue'),
+                beforeEnter(to, from, next) {
+                    if (!store.state.account.user) return next('/login');
+                    return next();
+                },
+            },
+            {
+                path: '/:contentTypeName/contents/:contentId/edit',
+                component: () => import(/* webpackChunkName: "content-type" */ '../views/EditOrAddContent.vue'),
+                props: { edit: true },
                 beforeEnter(to, from, next) {
                     if (!store.state.account.user) return next('/login');
                     return next();
