@@ -110,6 +110,7 @@ export default {
             for (const field of relationalFields) {
                 const data = await this.getContentsOfRelation(field.relationContentTypeId);
                 this.contentsOfRelation[field.fieldName] = data.map(content => ({ ...content.data, _id: content._id }));
+                this.contentsOfRelation = { ...this.contentsOfRelation };
             }
         }
     },
