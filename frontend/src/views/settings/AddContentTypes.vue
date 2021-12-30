@@ -227,9 +227,7 @@ export default {
         },
 
         fetchFields(val) {
-            console.log(this.contentTypes, val);
             this.selectedContentTypeFields = this.contentTypes.find(ct => ct._id === val)?.fieldsDatas ?? [];
-            console.log(this.selectedContentTypeFields);
         },
 
         addField() {
