@@ -56,7 +56,7 @@ const contentModule = {
             return contentTypes.data;
         },
         async deleteContent({ dispatch }, data) {
-            await cmsApi.delete(`/contents/${data.id}`);
+            await cmsApi.delete(`/contents/${data.id}?contentType=${data.contentTypeName}`);
 
             await dispatch('getContentsOfContentTypes', data.contentTypeId);
         },

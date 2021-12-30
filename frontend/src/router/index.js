@@ -120,7 +120,7 @@ export default function init(store) {
                 },
             },
             {
-                path: '/contents/:contentTypeId',
+                path: '/:contentTypeName/contents/:contentTypeId',
                 component: () => import(/* webpackChunkName: "content-type" */ '../views/Contents.vue'),
                 beforeEnter(to, from, next) {
                     if (!store.state.account.user) return next('/login');

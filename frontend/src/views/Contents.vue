@@ -39,7 +39,9 @@ export default {
             this.getContentsOfContentTypes(id);
         },
         async deleteContentHandler({ id }) {
-            await this.deleteContent({ id, contentTypeId: this.$route.params.contentTypeId });
+            const contentTypeName = this.$route.params.contentTypeName;
+
+            await this.deleteContent({ id, contentTypeId: this.$route.params.contentTypeId, contentTypeName });
         },
         async editContent({ id }) {
             console.log(id);
