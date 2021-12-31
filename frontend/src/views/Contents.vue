@@ -44,7 +44,9 @@ export default {
             await this.deleteContent({ id, contentTypeId: this.$route.params.contentTypeId, contentTypeName });
         },
         async editContent({ id }) {
-            console.log(id);
+            const contentTypeName = this.$route.params.contentTypeName;
+
+            this.$router.push(`/${contentTypeName}/contents/${id}/edit`);
         },
 
         handleButton() {
