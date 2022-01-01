@@ -43,10 +43,10 @@ export default {
 
             await this.deleteContent({ id, contentTypeId: this.$route.params.contentTypeId, contentTypeName });
         },
-        async editContent({ id }) {
+        async editContent({ contentId }) {
             const contentTypeName = this.$route.params.contentTypeName;
 
-            this.$router.push(`/${contentTypeName}/contents/${id}/edit`);
+            this.$router.push(`/${contentTypeName}/contents/${contentId}/edit`);
         },
 
         handleButton() {
@@ -74,10 +74,11 @@ export default {
             ];
         },
         tableData() {
-            return (this.contents ?? []).map(({ data, _id }, i) => {
+            return (this.contents ?? []).map(({ data, _id, contentId }, i) => {
                 return {
                     id: _id,
                     key: i,
+                    contentId: contentId,
                     ...data,
                 };
             });

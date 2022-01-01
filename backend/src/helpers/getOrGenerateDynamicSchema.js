@@ -13,6 +13,7 @@ const getOrGenerateDynamicSchema = name => {
                 contentType: { type: Schema.Types.ObjectId, ref: 'contentType', autopopulate: true },
                 language: { type: Schema.Types.ObjectId, ref: 'language', autopopulate: true, required: true },
                 data: { type: Schema.Types.Mixed, required: true },
+                contentId: { type: Schema.Types.String, required: true }, // this id is used for concatenation of contents in different languages
             },
             { timestamps: true },
         );

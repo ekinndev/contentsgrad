@@ -1,77 +1,111 @@
 <template>
-    <div :class="!edit ? 'addContent' : 'editContent'">
-        <box :title="!edit ? 'Add content' : 'Edit Content'">
-            <a-form :form="form" :label-col="{ span: 3 }" :wrapper-col="{ span: 10 }" @submit="handleSubmit">
-                <a-form-item :label="field.fieldName" v-for="field in contentFields" :key="field.fieldName">
-                    <a-input
-                        v-if="field.fieldType === 'string'"
-                        v-decorator="[field.fieldName, edit ? { initialValue: content[0].data[field.fieldName] } : {}]"
-                    />
-                    <a-textarea
-                        v-if="field.fieldType === 'rstring'"
-                        placeholder="Controlled autosize"
-                        v-decorator="[field.fieldName, edit ? { initialValue: content[0].data[field.fieldName] } : {}]"
-                    />
-                    <a-input-number
-                        v-if="field.fieldType === 'integer' || field.fieldType === 'float'"
-                        :step="field.fieldType === 'float' ? 0.1 : 1"
-                        v-decorator="[field.fieldName, edit ? { initialValue: content[0].data[field.fieldName] } : {}]"
-                    />
-                    <a-input-number
-                        v-if="field.fieldType === 'number'"
-                        :min="0"
-                        :step="1"
-                        v-decorator="[field.fieldName, edit ? { initialValue: content[0].data[field.fieldName] } : {}]"
-                    />
-                    <a-switch
-                        v-if="field.fieldType === 'boolean'"
-                        v-decorator="[field.fieldName, edit ? { initialValue: content[0].data[field.fieldName] } : {}]"
-                    />
-                    <a-textarea
-                        v-if="field.fieldType === 'object'"
-                        v-decorator="[field.fieldName, edit ? { initialValue: content[0].data[field.fieldName] } : {}]"
-                    />
-                    <a-date-picker
-                        v-if="field.fieldType === 'date'"
-                        v-decorator="[field.fieldName, edit ? { initialValue: content[0].data[field.fieldName] } : {}]"
-                    />
-                    <a-select
-                        v-if="field.fieldType === 'enum'"
-                        v-decorator="[field.fieldName, edit ? { initialValue: content[0].data[field.fieldName] } : {}]"
+    <div :class="!editMode ? 'addContent' : 'editContent'">
+        <box :title="!editMode ? 'Add content' : 'Edit Content'">
+            <a-tabs @change="setLanguage">
+                <a-tab-pane :key="language._id" :tab="language.code" v-for="(language, i) in languages">
+                    <a-form
+                        :form="form"
+                        :label-col="{ span: 3 }"
+                        :wrapper-col="{ span: 10 }"
+                        @submit="handleSubmit"
+                        v-if="contentLanguageId == language._id"
                     >
-                        <a-select-option :value="enumVal" v-for="enumVal in field.enumData" :key="enumVal">
-                            {{ enumVal }}
-                        </a-select-option>
-                    </a-select>
-                    <a-select
-                        v-if="field.fieldType === 'relation' && contentsOfRelation[field.fieldName]"
-                        v-decorator="[
-                            field.fieldName,
-                            edit
-                                ? {
-                                      initialValue: findInitialVal(
-                                          content[0].data[field.fieldName],
-                                          field.fieldName,
-                                          field.relationFieldName,
-                                      ),
-                                  }
-                                : {},
-                        ]"
-                    >
-                        <a-select-option
-                            :value="relationName._id"
-                            v-for="(relationName, i) in contentsOfRelation[field.fieldName]"
-                            :key="i"
-                        >
-                            {{ relationName[field.relationFieldName] }}
-                        </a-select-option>
-                    </a-select>
-                </a-form-item>
+                        <a-form-item :label="field.fieldName" v-for="field in contentFields" :key="field.fieldName">
+                            <a-input
+                                v-if="field.fieldType === 'string'"
+                                v-decorator="[
+                                    field.fieldName,
+                                    editMode ? { initialValue: getFormItemValue(i, field.fieldName) } : {},
+                                ]"
+                            />
+                            <a-textarea
+                                v-if="field.fieldType === 'rstring'"
+                                placeholder="Controlled autosize"
+                                v-decorator="[
+                                    field.fieldName,
+                                    editMode ? { initialValue: getFormItemValue(i, field.fieldName) } : {},
+                                ]"
+                            />
+                            <a-input-number
+                                v-if="field.fieldType === 'integer' || field.fieldType === 'float'"
+                                :step="field.fieldType === 'float' ? 0.1 : 1"
+                                v-decorator="[
+                                    field.fieldName,
+                                    editMode ? { initialValue: getFormItemValue(i, field.fieldName) } : {},
+                                ]"
+                            />
+                            <a-input-number
+                                v-if="field.fieldType === 'number'"
+                                :min="0"
+                                :step="1"
+                                v-decorator="[
+                                    field.fieldName,
+                                    editMode ? { initialValue: getFormItemValue(i, field.fieldName) } : {},
+                                ]"
+                            />
+                            <a-switch
+                                v-if="field.fieldType === 'boolean'"
+                                v-decorator="[
+                                    field.fieldName,
+                                    editMode ? { initialValue: getFormItemValue(i, field.fieldName) } : {},
+                                ]"
+                            />
+                            <a-textarea
+                                v-if="field.fieldType === 'object'"
+                                v-decorator="[
+                                    field.fieldName,
+                                    editMode ? { initialValue: getFormItemValue(i, field.fieldName) } : {},
+                                ]"
+                            />
+                            <a-date-picker
+                                v-if="field.fieldType === 'date'"
+                                v-decorator="[
+                                    field.fieldName,
+                                    editMode ? { initialValue: getFormItemValue(i, field.fieldName) } : {},
+                                ]"
+                            />
+                            <a-select
+                                v-if="field.fieldType === 'enum'"
+                                v-decorator="[
+                                    field.fieldName,
+                                    editMode ? { initialValue: getFormItemValue(i, field.fieldName) } : {},
+                                ]"
+                            >
+                                <a-select-option :value="enumVal" v-for="enumVal in field.enumData" :key="enumVal">
+                                    {{ enumVal }}
+                                </a-select-option>
+                            </a-select>
+                            <a-select
+                                v-if="field.fieldType === 'relation' && contentsOfRelation[field.fieldName]"
+                                v-decorator="[
+                                    field.fieldName,
+                                    editMode
+                                        ? {
+                                              initialValue: findInitialVal(
+                                                  getFormItemValue(i, field.fieldName),
+                                                  field.fieldName,
+                                                  field.relationFieldName,
+                                              ),
+                                          }
+                                        : {},
+                                ]"
+                            >
+                                <a-select-option
+                                    :value="relationName._id"
+                                    v-for="(relationName, i) in contentsOfRelation[field.fieldName]"
+                                    :key="i"
+                                >
+                                    {{ relationName[field.relationFieldName] }}
+                                </a-select-option>
+                            </a-select>
+                        </a-form-item>
 
-                <a-form-item>
-                    <a-button type="primary" html-type="submit"> Submit </a-button>
-                </a-form-item>
-            </a-form>
+                        <a-form-item>
+                            <a-button type="primary" html-type="submit"> Submit </a-button>
+                        </a-form-item>
+                    </a-form>
+                </a-tab-pane>
+            </a-tabs>
         </box>
     </div>
 </template>
@@ -79,6 +113,7 @@
 <script>
 import Box from '@/components/Box.vue';
 import { mapState, mapActions } from 'vuex';
+import { v4 as uuidv4 } from 'uuid';
 
 export default {
     components: {
@@ -91,7 +126,7 @@ export default {
         },
     },
     computed: {
-        ...mapState('content', ['contents']),
+        ...mapState('content', ['contents', 'languages']),
     },
     methods: {
         ...mapActions('content', [
@@ -103,6 +138,18 @@ export default {
         ]),
         findInitialVal(value, relationFieldName, relationKeyName) {
             return this.contentsOfRelation[relationFieldName].find(relation => relation[relationKeyName] === value)._id;
+        },
+        getFormItemValue(index, fieldName) {
+            return this.content?.[index]?.data?.[fieldName];
+        },
+        setLanguage(languageId) {
+            this.contentLanguageId = languageId;
+
+            if (!this.content.some(content => content.language._id === this.contentLanguageId)) {
+                this.editMode = false;
+            } else {
+                this.editMode = true;
+            }
         },
         handleSubmit(e) {
             e.preventDefault();
@@ -122,15 +169,23 @@ export default {
                     payload[field.fieldName] = values[field.fieldName].toISOString();
                 });
 
-                if (!this.edit) {
+                if (!this.editMode) {
+                    let contentTypeId = this.$route.params.contentTypeId;
+                    if (!contentTypeId) contentTypeId = this.content[0].contentType._id;
+
                     await this.addContent({
-                        contentTypeId: this.$route.params.contentTypeId,
-                        reqPayload: { data: payload, language: '617dc857edf7d4aa437b6988' },
+                        contentTypeId: contentTypeId,
+                        reqPayload: {
+                            data: payload,
+                            language: this.contentLanguageId,
+                            contentId: this.uniqueContentId,
+                        },
                     });
                 } else {
                     await this.editContent({
                         contentId: this.$route.params.contentId,
                         contentTypeName: this.$route.params.contentTypeName,
+                        language: this.contentLanguageId,
                         payload,
                     });
                 }
@@ -144,21 +199,29 @@ export default {
             contentsOfRelation: {},
             form: this.$form.createForm(this, { name: 'addContent' }),
             content: {},
+            contentLanguageId: null,
+            uniqueContentId: null,
+            editMode: this.edit,
         };
     },
 
     async mounted() {
-        const idOrName = !this.edit ? this.$route.params.contentTypeId : this.$route.params.contentTypeName;
+        this.contentLanguageId = this.languages[0]._id;
+        if (!this.editMode) this.uniqueContentId = uuidv4();
 
-        const contentTypePayload = { payload: idOrName, edit: this.edit };
+        const idOrName = !this.editMode ? this.$route.params.contentTypeId : this.$route.params.contentTypeName;
+
+        const contentTypePayload = { payload: idOrName, edit: this.editMode };
 
         const data = await this.getContentType(contentTypePayload);
 
-        if (this.edit) {
+        if (this.editMode) {
             this.content = await this.getContent({
                 contentTypeName: idOrName,
                 contentId: this.$route.params.contentId,
             });
+
+            this.uniqueContentId = this.content[0].contentId;
         }
 
         this.contentFields = data?.fieldsDatas ?? {};
