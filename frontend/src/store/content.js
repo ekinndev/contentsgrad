@@ -35,7 +35,7 @@ const contentModule = {
         },
         async getContent(_, data) {
             const contentTypes = await cmsApi.get(
-                `/contents/${data.contentId}?type=content&contentType=${data.contentTypeName}`,
+                `/contents/${data.contentId}?type=content&contentType=${data.contentTypeName}&variety=uuid`,
             );
 
             return contentTypes.data;
@@ -64,7 +64,7 @@ const contentModule = {
         },
         async editContent(_, data) {
             const editContentResponse = await cmsApi.put(
-                `/contents/${data.contentId}?contentType=${data.contentTypeName}`,
+                `/contents/${data.contentId}?contentType=${data.contentTypeName}&language=${data.language}`,
                 { data: data.payload },
             );
 
