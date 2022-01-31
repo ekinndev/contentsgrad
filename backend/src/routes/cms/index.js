@@ -349,7 +349,7 @@ router.put('/content-types/:id', ensureLogin, setSpace, async (req, res, next) =
 router.delete('/content-types/:id', ensureLogin, setSpace, async (req, res, next) => {
     const id = req.params.id;
 
-    const status = await ContentType.deleteOne({ _id: id, spaces: req.spaces });
+    const status = await ContentType.deleteOne({ _id: id, spaces: req.space });
 
     res.send(status);
 });
