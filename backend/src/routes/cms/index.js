@@ -50,6 +50,16 @@ const ensureLogin = async (req, res, next) => {
     }
     next();
 };
+
+const setSpace = (req, res, next) => {
+    if (!req.headers.space) {
+        next({ message: 'Space is required.', status: 400 });
+    }
+
+    req.space = req.headers.space;
+    next();
+};
+
 // Content Type Routes
 /**
  * @swagger
@@ -72,6 +82,12 @@ const ensureLogin = async (req, res, next) => {
  *           type: string
  *           enum: [name, id]
  *           default: id
+ *       - in: header
+ *         name: space
+ *         description: Set space
+ *         required: true
+ *         schema:
+ *           type: string
  *     responses:
  *       200:
  *         description: Get a content type.
@@ -128,7 +144,9 @@ router.get('/content-types/:idOrName', ensureLogin, async (req, res, next) => {
 
     const idOrName = req.params.idOrName;
 
-    const contentType = await ContentType.findOne(type == 'name' ? { name: idOrName } : { _id: idOrName });
+    const contentType = await ContentType.findOne(
+        type == 'name' ? { name: idOrName, spaces: req.space } : { _id: idOrName, spaces: req.space },
+    );
 
     res.send(contentType);
 });
@@ -138,6 +156,13 @@ router.get('/content-types/:idOrName', ensureLogin, async (req, res, next) => {
  *   get:
  *     tags: [Content Type]
  *     summary: Retrieve a list of all content types
+ *     parameters:
+ *       - in: header
+ *         name: space
+ *         description: Set space
+ *         required: true
+ *         schema:
+ *           type: string
  *     responses:
  *       200:
  *         description: Get all content types.
@@ -169,8 +194,8 @@ router.get('/content-types/:idOrName', ensureLogin, async (req, res, next) => {
  *                          example: 0
  *
  */
-router.get('/content-types', ensureLogin, async (req, res, next) => {
-    const datas = await ContentType.find();
+router.get('/content-types', ensureLogin, setSpace, async (req, res, next) => {
+    const datas = await ContentType.find({ spaces: req.space });
 
     res.send(datas);
 });
@@ -185,6 +210,12 @@ router.get('/content-types', ensureLogin, async (req, res, next) => {
  *         name: id
  *         required: true
  *         description: _id.
+ *         schema:
+ *           type: string
+ *       - in: header
+ *         name: space
+ *         description: Set space
+ *         required: true
  *         schema:
  *           type: string
  *     requestBody:
@@ -248,7 +279,7 @@ router.get('/content-types', ensureLogin, async (req, res, next) => {
  *                       message:
  *                          example: Cast to ObjectId failed for value 1 (type string) at path _id for model contentType
  */
-router.put('/content-types/:id', ensureLogin, async (req, res, next) => {
+router.put('/content-types/:id', ensureLogin, setSpace, async (req, res, next) => {
     const id = req.params.id;
 
     const { name, fieldsDatas, spaces } = req.body;
@@ -257,7 +288,7 @@ router.put('/content-types/:id', ensureLogin, async (req, res, next) => {
     if (!fieldsDatas) return next({ message: 'FieldsDatas must be required!', status: 400 });
     if (fieldsDatas.length <= 0) return next({ message: 'FieldsDatas must contain at least one key!', status: 400 });
 
-    const status = await ContentType.updateOne({ _id: id }, { name, fieldsDatas, spaces });
+    const status = await ContentType.updateOne({ _id: id, spaces: req.space }, { name, fieldsDatas, spaces });
 
     res.send(status);
 });
@@ -272,6 +303,12 @@ router.put('/content-types/:id', ensureLogin, async (req, res, next) => {
  *         name: id
  *         required: true
  *         description: _id.
+ *         schema:
+ *           type: string
+ *       - in: header
+ *         name: space
+ *         description: Set space
+ *         required: true
  *         schema:
  *           type: string
  *     responses:
@@ -309,10 +346,10 @@ router.put('/content-types/:id', ensureLogin, async (req, res, next) => {
  *                       message:
  *                          example: Cast to ObjectId failed for value 1 (type string) at path _id for model contentType
  */
-router.delete('/content-types/:id', ensureLogin, async (req, res, next) => {
+router.delete('/content-types/:id', ensureLogin, setSpace, async (req, res, next) => {
     const id = req.params.id;
 
-    const status = await ContentType.deleteOne({ _id: id });
+    const status = await ContentType.deleteOne({ _id: id, spaces: req.spaces });
 
     res.send(status);
 });
@@ -322,6 +359,13 @@ router.delete('/content-types/:id', ensureLogin, async (req, res, next) => {
  *   post:
  *     tags: [Content Type]
  *     summary: Create a content type
+ *     parameters:
+ *       - in: header
+ *         name: space
+ *         description: Set space
+ *         required: true
+ *         schema:
+ *           type: string
  *     requestBody:
  *       required: true
  *       content:
@@ -375,10 +419,10 @@ router.delete('/content-types/:id', ensureLogin, async (req, res, next) => {
  *                         example: 400
  *
  */
-router.post('/content-types', ensureLogin, async (req, res, next) => {
+router.post('/content-types', ensureLogin, setSpace, async (req, res, next) => {
     const { name, fieldsDatas, spaces } = req.body;
 
-    const isExist = await ContentType.exists({ name });
+    const isExist = await ContentType.exists({ name, spaces: req.space });
 
     if (isExist) return next({ message: 'This content type already exists!', status: 400 });
 
@@ -865,6 +909,12 @@ router.get('/contents/:id', ensureLogin, async (req, res, next) => {
  *         required: true
  *         schema:
  *           type: string
+ *       - in: header
+ *         name: space
+ *         description: Set space
+ *         required: true
+ *         schema:
+ *           type: string
  *     requestBody:
  *       required: true
  *       content:
@@ -930,7 +980,8 @@ router.get('/contents/:id', ensureLogin, async (req, res, next) => {
  *                       message:
  *                          example: Cast to ObjectId failed for value 1 (type string) at path _id for model contentType
  */
-router.put('/contents/:contentId', ensureLogin, async (req, res, next) => {
+
+router.put('/contents/:contentId', ensureLogin, setSpace, async (req, res, next) => {
     const body = req.body;
 
     const contentKeys = Object.keys(req.body.data);
@@ -941,7 +992,7 @@ router.put('/contents/:contentId', ensureLogin, async (req, res, next) => {
 
     if (!contentTypeName) return next({ status: 400, message: 'Missing field: contentType' });
 
-    const contentTypeIdData = await ContentType.findOne({ name: contentTypeName });
+    const contentTypeIdData = await ContentType.findOne({ name: contentTypeName, spaces: req.space });
 
     const Schema = getOrGenerateDynamicSchema(contentTypeIdData.name);
 
@@ -1032,6 +1083,12 @@ router.delete('/contents/:id', ensureLogin, async (req, res, next) => {
  *         description: _id.
  *         schema:
  *           type: string
+ *       - in: header
+ *         name: space
+ *         description: Set space
+ *         required: true
+ *         schema:
+ *           type: string
  *     requestBody:
  *       required: true
  *       content:
@@ -1105,10 +1162,10 @@ router.delete('/contents/:id', ensureLogin, async (req, res, next) => {
  *                       message:
  *
  */
-router.post('/contents/:contentTypeId', ensureLogin, async (req, res, next) => {
+router.post('/contents/:contentTypeId', ensureLogin, setSpace, async (req, res, next) => {
     const cTID = req.params.contentTypeId;
 
-    const contentTypeIdData = await ContentType.findOne({ _id: cTID });
+    const contentTypeIdData = await ContentType.findOne({ _id: cTID, spaces: req.space });
 
     const Schema = getOrGenerateDynamicSchema(contentTypeIdData.name);
 
