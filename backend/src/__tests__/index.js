@@ -181,7 +181,7 @@ describe('Content Type', () => {
     });
 
     test('There should be a no content type at db', async () => {
-        const response = await request.get('/cms/content-types/');
+        const response = await request.get('/cms/content-types/').set('space', spaceId);
 
         expect(response.body.length).toBe(0);
     });
@@ -192,7 +192,7 @@ describe('Content Type', () => {
             spaces: [spaceId],
         };
 
-        const response = await request.post('/cms/content-types/').send(data);
+        const response = await request.post('/cms/content-types/').set('space', spaceId).send(data);
 
         expect(response.status).toBe(500);
     });
@@ -208,7 +208,7 @@ describe('Content Type', () => {
             spaces: [spaceId],
         };
 
-        const response = await request.post('/cms/content-types/').send(data);
+        const response = await request.post('/cms/content-types/').set('space', spaceId).send(data);
 
         expect(response.status).toBe(201);
 
@@ -226,13 +226,13 @@ describe('Content Type', () => {
             spaces: [spaceId],
         };
 
-        const response = await request.post('/cms/content-types/').send(data);
+        const response = await request.post('/cms/content-types/').set('space', spaceId).send(data);
 
         expect(response.status).toBe(400);
     });
 
     test('At least one content type which name is test', async () => {
-        const response = await request.get(`/cms/content-types/${id}`);
+        const response = await request.get(`/cms/content-types/${id}`).set('space', spaceId);
 
         expect(response.status).toBe(200);
         expect(response.body.name).toBe('test');
@@ -251,7 +251,7 @@ describe('Content Type', () => {
             spaces: [spaceId],
         };
 
-        const response = await request.put(`/cms/content-types/${id}`).send(data);
+        const response = await request.put(`/cms/content-types/${id}`).set('space', spaceId).send(data);
 
         expect(response.status).toBe(200);
         expect(response.body.modifiedCount).toBe(1);
@@ -268,7 +268,7 @@ describe('Content Type', () => {
             spaces: [spaceId],
         };
 
-        const response = await request.put(`/cms/content-types/${id}`).send(data);
+        const response = await request.put(`/cms/content-types/${id}`).set('space', spaceId).send(data);
 
         expect(response.status).toBe(400);
         expect(response.body.message).toBe('Name must be required!');
@@ -276,7 +276,7 @@ describe('Content Type', () => {
     test('Edit content type with missing fieldsDatas should return 400', async () => {
         const data = { name: 'test', spaces: [spaceId] };
 
-        const response = await request.put(`/cms/content-types/${id}`).send(data);
+        const response = await request.put(`/cms/content-types/${id}`).set('space', spaceId).send(data);
 
         expect(response.status).toBe(400);
         expect(response.body.message).toBe('FieldsDatas must be required!');
@@ -285,14 +285,14 @@ describe('Content Type', () => {
     test('Content type fields datas should include at least one item', async () => {
         const data = { name: 'test', fieldsDatas: [], spaces: [spaceId] };
 
-        const response = await request.put(`/cms/content-types/${id}`).send(data);
+        const response = await request.put(`/cms/content-types/${id}`).set('space', spaceId).send(data);
 
         expect(response.status).toBe(400);
         expect(response.body.message).toBe('FieldsDatas must contain at least one key!');
     });
 
     test('Delete content type', async () => {
-        const response = await request.delete(`/cms/content-types/${id}`);
+        const response = await request.delete(`/cms/content-types/${id}`).set('space', spaceId);
 
         expect(response.status).toBe(200);
         expect(response.body.deletedCount).toBe(1);
@@ -301,6 +301,7 @@ describe('Content Type', () => {
 
 describe('Content', () => {
     let id;
+    let contentUuid;
     let contentTypeId;
     let contentTypeName;
     let spaceId;
@@ -308,12 +309,13 @@ describe('Content', () => {
 
     beforeAll(async () => {
         const spaceData = {
-            name: 'Desktop',
+            name: 'DesktopContent',
         };
 
         const spaceResponse = await request.post('/cms/spaces').send(spaceData);
 
         spaceId = spaceResponse.body._id;
+
         const contentTypedata = {
             name: 'test',
             fieldsDatas: [
@@ -324,7 +326,10 @@ describe('Content', () => {
             spaces: [spaceId],
         };
 
-        const contentTypeResponse = await request.post('/cms/content-types/').send(contentTypedata);
+        const contentTypeResponse = await request
+            .post('/cms/content-types/')
+            .set('space', spaceId)
+            .send(contentTypedata);
 
         contentTypeId = contentTypeResponse.body._id;
         contentTypeName = contentTypeResponse.body.name;
@@ -340,7 +345,7 @@ describe('Content', () => {
     });
 
     test('There should be a no content type at db', async () => {
-        const response2 = await request.get(`/cms/contents/${contentTypeId}?type=contentType`);
+        const response2 = await request.get(`/cms/contents/${contentTypeId}?type=contentType`).set('space', spaceId);
 
         expect(response2.body.length).toBe(0);
     });
@@ -351,25 +356,29 @@ describe('Content', () => {
             language: languageId,
         };
 
-        const response = await request.post(`/cms/contents/${contentTypeId}`).send(data);
+        const response = await request.post(`/cms/contents/${contentTypeId}`).set('space', spaceId).send(data);
 
         expect(response.body.message).toBe('Key error');
         expect(response.status).toBe(400);
     });
     test('Sucessfully create content should return 201', async () => {
-        const data = { data: { title: 'aaaa', age: 1.2, number: 10 }, language: languageId };
+        const data = { data: { title: 'aaaa', age: 1.2, number: 10 }, language: languageId, contentId: 'asasasas' };
 
-        const response = await request.post(`/cms/contents/${contentTypeId}`).send(data);
+        const response = await request.post(`/cms/contents/${contentTypeId}`).set('space', spaceId).send(data);
 
         expect(response.status).toBe(201);
 
         id = response.body._id;
+        contentUuid = response.body.contentId;
     });
 
     test('Edit content should return 201', async () => {
         const data = { data: { title: 'hello', age: 1.3, number: 12 }, language: languageId };
 
-        const response = await request.put(`/cms/contents/${id}?contentType=${contentTypeName}`).send(data);
+        const response = await request
+            .put(`/cms/contents/${contentUuid}?contentType=${contentTypeName}&language=${languageId}`)
+            .set('space', spaceId)
+            .send(data);
 
         expect(response.status).toBe(200);
         expect(response.body.modifiedCount).toBe(1);
@@ -377,7 +386,9 @@ describe('Content', () => {
     });
 
     test('Delete content should return 200', async () => {
-        const response = await request.delete(`/cms/contents/${id}?contentType=${contentTypeName}`);
+        const response = await request
+            .delete(`/cms/contents/${id}?contentType=${contentTypeName}`)
+            .set('space', spaceId);
         expect(response.status).toBe(200);
     });
 });
