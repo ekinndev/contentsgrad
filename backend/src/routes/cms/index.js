@@ -139,7 +139,7 @@ const setSpace = (req, res, next) => {
  *                       message:
  *                          example: Cast to ObjectId failed for value 1 (type string) at path _id for model contentType
  */
-router.get('/content-types/:idOrName', ensureLogin, async (req, res, next) => {
+router.get('/content-types/:idOrName', ensureLogin, setSpace, async (req, res, next) => {
     const type = req.query.type;
 
     const idOrName = req.params.idOrName;
