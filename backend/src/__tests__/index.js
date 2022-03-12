@@ -344,11 +344,11 @@ describe('Content', () => {
         languageId = languageResponse.body._id;
     });
 
-    test('There should be a no content type at db', async () => {
-        const response2 = await request.get(`/cms/contents/${contentTypeId}?type=contentType`).set('space', spaceId);
+    // test('There should be a no content type at db', async () => {
+    //     const response2 = await request.get(`/cms/contents/${contentTypeId}?type=contentType`).set('space', spaceId);
 
-        expect(response2.body.length).toBe(0);
-    });
+    //     expect(response2.body.length).toBe(0);
+    // });
 
     test('Create content with extra field should return 400', async () => {
         const data = {
