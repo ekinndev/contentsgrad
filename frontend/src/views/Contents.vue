@@ -1,6 +1,13 @@
 <template>
     <div class="Contents">
-        <box title="Contents" @handler="handleButton" icon="plus" buttonText="Add a new content">
+        <box
+            title="Contents"
+            @handler="handleButton"
+            icon="plus"
+            buttonText="Add a new content"
+            showLanguageSelect
+            @selectLanguageHandler="selectHandler"
+        >
             <a-table :columns="tableColumns" :data-source="tableData">
                 <span slot="customTitle">Name</span>
 
@@ -26,17 +33,24 @@
 </template>
 
 <script>
-import { mapState, mapActions } from 'vuex';
+import { mapState, mapActions, mapMutations } from 'vuex';
 import Box from '@/components/Box.vue';
 
 export default {
     components: { Box },
     methods: {
         ...mapActions('content', ['getContentsOfContentTypes', 'deleteContent']),
+        ...mapMutations('content', ['setCurrentContentLanguageId']),
+
         fetchData() {
             const id = this.$route.params.contentTypeId;
 
             this.getContentsOfContentTypes(id);
+        },
+        selectHandler(data) {
+            this.setCurrentContentLanguageId(data);
+
+            this.fetchData();
         },
         async deleteContentHandler({ id }) {
             const contentTypeName = this.$route.params.contentTypeName;

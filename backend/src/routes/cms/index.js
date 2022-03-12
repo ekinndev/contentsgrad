@@ -783,6 +783,12 @@ router.post('/spaces', ensureLogin, async (req, res, next) => {
  *         schema:
  *           type: string
  *           default: news
+ *       - in: query
+ *         name: languageCode
+ *         description: Indicate the languageCode of contentType
+ *         required: false
+ *         schema:
+ *           type: string
  *     responses:
  *       200:
  *         description: Get all contents based on contentTypeId.
@@ -841,12 +847,16 @@ router.get('/contents/:id', ensureLogin, async (req, res, next) => {
 
     if (!idType) return next({ message: 'Missing field: type', status: 400 });
 
+    let languageCode = req.query.languageCode;
+
     let datas;
     let contentTypeName;
 
     if (idType == 'content') {
         contentTypeName = req.query.contentType;
     } else if (idType == 'contentType') {
+        if (!languageCode) return next({ message: 'Missing field: languageCode', status: 400 });
+
         contentTypeName = (await ContentType.findOne({ _id: id })).name;
     }
 
@@ -858,7 +868,7 @@ router.get('/contents/:id', ensureLogin, async (req, res, next) => {
         const searchData = idVariety === 'id' ? { _id: id } : { contentId: id };
         datas = await Schema.find(searchData);
     } else if (idType == 'contentType') {
-        datas = await Schema.find({ contentType: id });
+        datas = await Schema.find({ contentType: id, language: languageCode });
     }
 
     for (let index = 0; index < datas.length; index++) {

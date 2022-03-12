@@ -8,6 +8,7 @@ const contentModule = {
         contentTypes: undefined,
         contents: undefined,
         content: undefined,
+        currentContentLanguageId: undefined,
     }),
     mutations: {
         setContentTypes(state, contentTypes) {
@@ -21,6 +22,9 @@ const contentModule = {
         },
         setContents(state, contents) {
             state.contents = contents;
+        },
+        setCurrentContentLanguageId(state, language) {
+            state.currentContentLanguageId = language;
         },
     },
     actions: {
@@ -48,8 +52,10 @@ const contentModule = {
             const spaces = await cmsApi.get('/spaces');
             commit('setSpaces', spaces.data);
         },
-        async getContentsOfContentTypes({ commit }, data) {
-            const contentTypes = await cmsApi.get(`/contents/${data}?type=contentType`);
+        async getContentsOfContentTypes({ commit, state }, data) {
+            const languageId = state.currentContentLanguageId || state.languages[0]._id;
+
+            const contentTypes = await cmsApi.get(`/contents/${data}?type=contentType&languageCode=${languageId}`);
             commit('setContents', contentTypes.data);
         },
         async getContentsOfRelation(_, data) {
