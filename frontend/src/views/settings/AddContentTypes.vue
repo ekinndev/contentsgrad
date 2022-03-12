@@ -247,7 +247,10 @@ export default {
                     values.fieldsDatas = values.fieldsDatas.map(x =>
                         x.fieldType === 'enum' ? { ...x, enumData: x.enumData.split('\n') } : x,
                     );
-                    const spaces = this.spaces.map(space => ({ _id: space._id }));
+
+                    const spaces = values.spaces.map(spaceId => ({
+                        _id: spaceId,
+                    }));
 
                     const { contentTypeName, fieldsDatas } = values;
 

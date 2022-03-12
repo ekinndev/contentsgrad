@@ -11,7 +11,7 @@ const accountModule = {
         },
     },
     actions: {
-        async login({ commit, dispatch }, data) {
+        async login({ commit, dispatch, rootState }, data) {
             try {
                 const user = await cmsApi.post('/user/session', data);
                 commit('setUser', user.data);
@@ -22,6 +22,11 @@ const accountModule = {
             } finally {
                 await dispatch('content/getSpaces', null, { root: true });
                 await dispatch('content/getLanguages', null, { root: true });
+
+                const spaceName = rootState.content.spaces[0]._id;
+
+                cmsApi.defaults.headers.common['space'] = spaceName; // Set first state of the space
+
                 await dispatch('content/getContentTypes', null, { root: true });
             }
         },
