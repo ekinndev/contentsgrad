@@ -25,6 +25,11 @@
                     </a-menu-item>
                 </template>
             </a-menu>
+            <a-select :defaultValue="spaces[0]._id" style="width: 90%" @change="handleSpace" v-if="!collapsed">
+                <a-select-option v-for="(space, i) in spaces" :key="i" :value="space._id">
+                    {{ space.name }}
+                </a-select-option>
+            </a-select>
         </a-layout-sider>
         <a-layout>
             <a-layout-content class="layoutContent">
@@ -50,12 +55,16 @@ export default {
     },
     methods: {
         ...mapActions('account', ['logout']),
+        ...mapActions('content', ['setAxiosSpace']),
         convertToCapitalize(val) {
             return val.slice(0, 1).toUpperCase() + val.slice(1);
         },
+        async handleSpace(val) {
+            await this.setAxiosSpace(val);
+        },
     },
     computed: {
-        ...mapState('content', ['contentTypes']),
+        ...mapState('content', ['contentTypes', 'spaces']),
         ...mapState('account', ['user']),
         getMenuItems() {
             const defaultMenuItems = [

@@ -76,6 +76,10 @@ const contentModule = {
 
             return editContentResponse.data;
         },
+        async setAxiosSpace({ dispatch }, data) {
+            cmsApi.defaults.headers.common['space'] = data;
+            await dispatch('getContentTypes');
+        },
         async deleteContent({ dispatch }, data) {
             await cmsApi.delete(`/contents/${data.id}?contentType=${data.contentTypeName}`);
 
