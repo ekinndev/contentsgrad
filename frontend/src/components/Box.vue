@@ -4,7 +4,7 @@
             <a-col flex="200px">
                 <h3>{{ title }}</h3>
             </a-col>
-            <a-row type="flex">
+            <a-row type="flex" :gutter="8">
                 <a-col v-if="showLanguageSelect">
                     <a-select @change="selectLanguageHandler">
                         <a-select-option v-for="lan in selectLanData" :key="lan.value" :value="lan.value">
