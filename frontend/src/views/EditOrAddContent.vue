@@ -1,7 +1,7 @@
 <template>
     <div :class="!editMode ? 'addContent' : 'editContent'">
         <box :title="!editMode ? 'Add content' : 'Edit Content'">
-            <a-tabs @change="setLanguage">
+            <a-tabs @change="setLanguage" :default-active-key="currentContentLanguageId">
                 <a-tab-pane :key="language._id" :tab="language.code" v-for="(language, i) in languages">
                     <a-form
                         :form="form"
@@ -126,7 +126,7 @@ export default {
         },
     },
     computed: {
-        ...mapState('content', ['contents', 'languages']),
+        ...mapState('content', ['contents', 'languages', 'currentContentLanguageId']),
     },
     methods: {
         ...mapActions('content', [
@@ -199,14 +199,14 @@ export default {
             contentsOfRelation: {},
             form: this.$form.createForm(this, { name: 'addContent' }),
             content: {},
-            contentLanguageId: null,
+            contentLanguageId: undefined,
             uniqueContentId: null,
             editMode: this.edit,
         };
     },
 
     async mounted() {
-        this.contentLanguageId = this.languages[0]._id;
+        this.contentLanguageId = this.currentContentLanguageId;
         if (!this.editMode) this.uniqueContentId = uuidv4();
 
         const idOrName = !this.editMode ? this.$route.params.contentTypeId : this.$route.params.contentTypeName;

@@ -6,7 +6,7 @@
             </a-col>
             <a-row type="flex" :gutter="8">
                 <a-col v-if="showLanguageSelect">
-                    <a-select @change="selectLanguageHandler">
+                    <a-select @change="selectLanguageHandler" :defaultValue="currentContentLanguageId">
                         <a-select-option v-for="lan in selectLanData" :key="lan.value" :value="lan.value">
                             {{ lan.label }}
                         </a-select-option>
@@ -54,7 +54,7 @@ export default {
         },
     },
     computed: {
-        ...mapState('content', ['languages']),
+        ...mapState('content', ['languages', 'currentContentLanguageId']),
 
         selectLanData() {
             return this.languages.map(language => ({

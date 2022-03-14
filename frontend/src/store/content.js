@@ -53,7 +53,12 @@ const contentModule = {
             commit('setSpaces', spaces.data);
         },
         async getContentsOfContentTypes({ commit, state }, data) {
-            const languageId = state.currentContentLanguageId || state.languages[0]._id;
+            let languageId = state.currentContentLanguageId;
+
+            if (!languageId) {
+                commit('setCurrentContentLanguageId', state.languages[0]._id);
+                languageId = state.languages[0]._id;
+            }
 
             const contentTypes = await cmsApi.get(`/contents/${data}?type=contentType&languageCode=${languageId}`);
             commit('setContents', contentTypes.data);
