@@ -37,6 +37,7 @@
       <a href="#about-the-project">About The Project</a>
       <ul>
         <li><a href="#built-with">Built With</a></li>
+        <li><a href="#swagger-urls">Swagger Urls</a></li>
       </ul>
     </li>
     <li>
@@ -57,6 +58,13 @@
 ## About The Project
 
 <!-- [![Product Name Screen Shot][product-screenshot]]() -->
+
+### Swagger Urls
+
+```
+http://localhost:3000/cms/swagger/
+http://localhost:3000/web/swagger/
+```
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
