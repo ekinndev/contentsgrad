@@ -1,4 +1,5 @@
 import cmsApi from '@/lib/cms-api.js';
+import { message } from 'ant-design-vue';
 
 const contentModule = {
     namespaced: true,
@@ -29,89 +30,166 @@ const contentModule = {
     },
     actions: {
         async getContentTypes({ commit }) {
-            const contentTypes = await cmsApi.get('/content-types');
-            commit('setContentTypes', contentTypes.data);
+            try {
+                const contentTypes = await cmsApi.get('/content-types');
+                commit('setContentTypes', contentTypes.data);
+            } catch (e) {
+                message.error('Error while getting content types: ' + e.response.data?.message);
+            }
         },
         async getContentType(_, data) {
-            const contentTypes = await cmsApi.get(`/content-types/${data.payload}?type=${data.edit ? 'name' : 'id'}`);
-
-            return contentTypes.data;
+            try {
+                const contentTypes = await cmsApi.get(
+                    `/content-types/${data.payload}?type=${data.edit ? 'name' : 'id'}`,
+                );
+                return contentTypes.data;
+            } catch (e) {
+                message.error('Error while getting content type: ' + e.response.data?.message);
+            }
         },
         async getContent(_, data) {
-            const contentTypes = await cmsApi.get(
-                `/contents/${data.contentId}?type=content&contentType=${data.contentTypeName}&variety=uuid`,
-            );
+            try {
+                const contentTypes = await cmsApi.get(
+                    `/contents/${data.contentId}?type=content&contentType=${data.contentTypeName}&variety=uuid`,
+                );
 
-            return contentTypes.data;
+                return contentTypes.data;
+            } catch (e) {
+                message.error('Error while getting content: ' + e.response.data?.message);
+            }
         },
         async getLanguages({ commit }) {
-            const languages = await cmsApi.get('/languages');
-            commit('setLanguages', languages.data);
+            try {
+                const languages = await cmsApi.get('/languages');
+                commit('setLanguages', languages.data);
+            } catch (e) {
+                message.error('Error while getting languages: ' + e.response.data?.message);
+            }
         },
         async getSpaces({ commit }) {
-            const spaces = await cmsApi.get('/spaces');
-            commit('setSpaces', spaces.data);
+            try {
+                const spaces = await cmsApi.get('/spaces');
+                commit('setSpaces', spaces.data);
+            } catch (e) {
+                message.error('Error while getting spaces: ' + e.response.data?.message);
+            }
         },
         async getContentsOfContentTypes({ commit, state }, data) {
-            let languageId = state.currentContentLanguageId;
+            try {
+                let languageId = state.currentContentLanguageId;
 
-            if (!languageId) {
-                commit('setCurrentContentLanguageId', state.languages[0]._id);
-                languageId = state.languages[0]._id;
+                if (!languageId) {
+                    commit('setCurrentContentLanguageId', state.languages[0]._id);
+                    languageId = state.languages[0]._id;
+                }
+
+                const contentTypes = await cmsApi.get(`/contents/${data}?type=contentType&languageCode=${languageId}`);
+                commit('setContents', contentTypes.data);
+            } catch (e) {
+                message.error('Error while getting contents of content type: ' + e.response.data?.message);
             }
-
-            const contentTypes = await cmsApi.get(`/contents/${data}?type=contentType&languageCode=${languageId}`);
-            commit('setContents', contentTypes.data);
         },
         async getContentsOfRelation(_, data) {
-            const contentTypes = await cmsApi.get(`/contents/${data}?type=contentType`);
+            try {
+                const contentTypes = await cmsApi.get(`/contents/${data}?type=contentType`);
 
-            return contentTypes.data;
+                return contentTypes.data;
+            } catch (e) {
+                message.error('Error while getting contents of relation: ' + e.response.data?.message);
+            }
         },
         async addContent(_, data) {
-            const contentTypes = await cmsApi.post(`/contents/${data.contentTypeId}?type=contentType`, data.reqPayload);
-
-            return contentTypes.data;
+            try {
+                const contentTypes = await cmsApi.post(
+                    `/contents/${data.contentTypeId}?type=contentType`,
+                    data.reqPayload,
+                );
+                message.success('Content added successfully!');
+                return contentTypes.data;
+            } catch (e) {
+                message.error('Error while adding content: ' + e.response.data?.message);
+            }
         },
         async editContent(_, data) {
-            const editContentResponse = await cmsApi.put(
-                `/contents/${data.contentId}?contentType=${data.contentTypeName}&language=${data.language}`,
-                { data: data.payload },
-            );
+            try {
+                const editContentResponse = await cmsApi.put(
+                    `/contents/${data.contentId}?contentType=${data.contentTypeName}&language=${data.language}`,
+                    { data: data.payload },
+                );
+                message.success('Content edited successfully!');
 
-            return editContentResponse.data;
+                return editContentResponse.data;
+            } catch (e) {
+                message.error('Error while editing content: ' + e.response.data?.message);
+            }
         },
         async setAxiosSpace({ dispatch }, data) {
             cmsApi.defaults.headers.common['space'] = data;
             await dispatch('getContentTypes');
         },
         async deleteContent({ dispatch }, data) {
-            await cmsApi.delete(`/contents/${data.id}?contentType=${data.contentTypeName}`);
+            try {
+                await cmsApi.delete(`/contents/${data.id}?contentType=${data.contentTypeName}`);
+                message.success('Content deleted successfully!');
+            } catch (e) {
+                message.error('Error while adding space: ' + e.response.data?.message);
+            }
 
             await dispatch('getContentsOfContentTypes', data.contentTypeId);
         },
         async addSpace({ dispatch }, data) {
-            await cmsApi.post('/spaces', data);
+            try {
+                await cmsApi.post('/spaces', data);
+                message.success('Space added successfully!');
+            } catch (e) {
+                message.error('Error while adding space: ' + e.response.data?.message);
+            }
             await dispatch('getSpaces');
         },
         async deleteSpace({ dispatch }, data) {
-            await cmsApi.delete(`/spaces/${data}`);
+            try {
+                await cmsApi.delete(`/spaces/${data}`);
+                message.success('Space deleted successfully!');
+            } catch (e) {
+                message.error('Error while deleting space: ' + e.response.data?.message);
+            }
             await dispatch('getSpaces');
         },
         async addLanguage({ dispatch }, data) {
-            await cmsApi.post('/languages', data);
+            try {
+                await cmsApi.post('/languages', data);
+                message.success('Language added successfully!');
+            } catch (e) {
+                message.error('Error while adding language: ' + e.response.data?.message);
+            }
+
             await dispatch('getLanguages');
         },
         async addContentType({ dispatch }, data) {
-            await cmsApi.post(`/content-types`, data);
+            try {
+                await cmsApi.post(`/content-types`, data);
+                message.success('Content type added successfully!');
+            } catch (e) {
+                message.error('Error while adding content type: ' + e.response.data?.message);
+            }
             await dispatch('getContentTypes');
         },
         async deleteContentType({ dispatch }, data) {
-            await cmsApi.delete(`/content-types/${data}`);
+            try {
+                await cmsApi.delete(`/content-types/${data}`);
+                message.success('Content type deleted successfully!');
+            } catch (e) {
+                message.error('Error while deleting content type: ' + e.response.data?.message);
+            }
             await dispatch('getContentTypes');
         },
         async deleteLanguage({ dispatch }, data) {
-            await cmsApi.delete(`/languages/${data}`);
+            try {
+                await cmsApi.delete(`/languages/${data}`);
+                message.success('Language deleted successfully!');
+            } catch (e) {
+                message.error('Error while deleting language: ' + e.response.data?.message);
+            }
             await dispatch('getLanguages');
         },
     },

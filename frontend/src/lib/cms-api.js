@@ -1,5 +1,4 @@
 import axios from 'axios';
-import { message } from 'ant-design-vue';
 
 const instance = axios.create({
     baseURL: 'http://localhost:3000/cms/',
@@ -21,7 +20,6 @@ instance.interceptors.response.use(
         return response;
     },
     function (error) {
-        message.error(error.response.data?.message);
         return Promise.reject(error);
     },
 );
