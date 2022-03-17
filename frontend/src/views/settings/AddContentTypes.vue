@@ -24,6 +24,7 @@
                 <template v-for="(k, index) in form.getFieldValue('contentTypesForm')">
                     <a-form-item :key="'fn' + k" :label="index === 0 ? 'Field Type Name' : ''" :required="true">
                         <a-input
+                            :data-cy="`fieldName${index}`"
                             v-decorator="[
                                 `fieldsDatas[${k}].fieldName`,
                                 {
@@ -51,6 +52,7 @@
                     <a-form-item :key="'ft' + k" :label="index === 0 ? 'Field Type' : ''" :required="true">
                         <a-select
                             @select="setEnumOrRelationData($event, index)"
+                            :data-cy="`fieldType${index}`"
                             v-decorator="[
                                 `fieldsDatas[${k}].fieldType`,
                                 {
@@ -81,6 +83,7 @@
                     <template v-if="enumOrRelationList[`type[${index}]`] === 'enum'">
                         <a-form-item :key="'fte' + k">
                             <a-textarea
+                                :data-cy="`enum${index}`"
                                 v-decorator="[
                                     `fieldsDatas[${k}].enumData`,
                                     {
